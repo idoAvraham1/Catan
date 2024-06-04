@@ -1,0 +1,11 @@
+# ninja log v5
+5	483	7391147129062735	CMakeFiles/Catan.dir/Board.cpp.obj	185c989e8c7e3a00
+2	387	7391887840209048	build.ninja	6862e34cddc38666
+14	5128	7391426767514427	CMakeFiles/Catan.dir/Player.cpp.obj	bc083c6d2f84e143
+0	735	7391147131587009	CMakeFiles/Catan.dir/main.cpp.obj	eebfc5c6b196ae1d
+4	4043	7391426756694444	CMakeFiles/Catan.dir/Catan.cpp.obj	fd8570cb328cc043
+9	4555	7391426761820671	CMakeFiles/Catan.dir/Test.cpp.obj	b0173c82c77250d7
+22	4429	7391147168454372	CMakeFiles/Catan.dir/TestCounter.cpp.obj	81c654ff1790618b
+5129	7163	7391426787908150	Catan.exe	f9c5fe66d9ddc6bc
+19	3451	7391426750431288	CMakeFiles/Catan.dir/DevelopmentCard.cpp.obj	22bab70ac5b05d4b
+25	3417	7391426749842883	CMakeFiles/Catan.dir/CardDeck.cpp.obj	8b481b22972d06a2
