@@ -4,7 +4,7 @@ using namespace mycatan;
 // Constructor
     Player::Player(std::string name)
             : name(std::move(name)), resources(5, 0), othersPlayers(2, nullptr),
-             winning_points(0), isMyTurn(false) {
+             winning_points(0), isMyTurn(false) , knightCount(0) {
     }
 
 // General methods
@@ -53,14 +53,47 @@ using namespace mycatan;
         // TODO: Implement logic to handle the dice roll and update player resources
     }
 
+// knight methods 
+    
+    void Player::addKnight() {
+         knightCount++; 
+         //  TODO :needs to be with card , for trade !
+    }
+    void Player::removeKnight() { 
+            if (knightCount > 0) 
+                knightCount--;
+                //TODO : remove the card from the player if exist! 
+     }
+
 // Card methods
+    void Player::deleteOwnedCards(){
+        for(Card* card : ownedCards){
+            delete card;
+        }
+    }
+
     void Player::buyDevelopmentCard() {
         // verify that the player can buy a card
         if (! hasEnoughResources("developmentCard")  || !isMyTurn)
             throw std::runtime_error("Cant buy development card! check your resources and play only in your turn!");
+         
+         //decrease neccesry resources for buying dev card 
+         decreaseResourcesAfterAction("developmentCard");
 
-        decreaseResourcesAfterAction("developmentCard");
-        Card* newCard = CardDeck::drawCard();
+         // get an instance of the card deck and draw a card
+         CardDeck& deck = CardDeck::getInstance();
+         Card* newCard = deck.drawCard();
+         std::cout<<name<< " Drew a " << newCard->getType() << "." << std::endl;
+
+         // increase knight count if such received
+         if(newCard->getType() == "Knight")
+            knightCount++;
+
+         // add winning point if such card received 
+         if(newCard->getType() == "Winning Points")
+             winning_points++;
+            
+
         // add the drawn card to the player owned cards
         ownedCards.push_back(newCard);
         // set the new owner of the card
@@ -69,7 +102,8 @@ using namespace mycatan;
 
     void Player::useMonopolyCard(Resources giveMeThatResource) {
         // Get the usable card
-        getUsableCard("Monopoly");
+        Card* monopolyCard =  getUsableCard("Monopoly");
+        
 
         // Collect all the resources from other players
         size_t totalResourcesCollected = 0;
@@ -82,12 +116,15 @@ using namespace mycatan;
 
         std::cout << name << " used a Monopoly card! Collected " << totalResourcesCollected
                   << " " << resourceToString(giveMeThatResource) << " from other players." << std::endl;
+        
+        delete monopolyCard;
         endTurn();
+        
     }
 
     void Player::useYearOfPlentyCard(Resources resource1, Resources resource2) {
         // Get the usable card
-        getUsableCard("Year of Plenty");
+      Card* yearOfPlentyCard  = getUsableCard("Year of Plenty");
 
         // Add the resources to this player
         resources[resourceToInt(resource1)] += 1;
@@ -95,18 +132,28 @@ using namespace mycatan;
 
         std::cout << name << " used a Year of Plenty card! Gained "
                   << resourceToString(resource1) << " and " << resourceToString(resource2) << "." << std::endl;
+        delete yearOfPlentyCard;
         endTurn();
-    }
+        }
 
-    void Player::useWinningPointsCard() {
-        // Get the usable card
-        getUsableCard("Winning Points");
+    
+    void Player::getBiggestArmyCard(){
+        // verify that player own 3 knight cards 
+        if(knightCount  < 3 || !isMyTurn)
+            throw std::runtime_error("Not enough knight cards to get the biggest army Card! / play at your turn");
 
-        // add points to this player
-        winning_points+=2;
-        std::cout << name << " used a Winning points  card!" << std::endl;
-        endTurn();
+        // get a new ThreeKnightsCard from the deck  and add him to the player cards
+         CardDeck& deck = CardDeck::getInstance();
+         BiggestArmyCard* biggestArmyCard = deck.getBiggestArmyCard();
+         ownedCards.push_back(biggestArmyCard);
 
+         // mark card as used 
+         biggestArmyCard->setUsed();
+        
+         // add points to this player
+         winning_points += 2;
+         std::cout << name << " Received the biggest army card!" << std::endl;
+         endTurn();
     }
 
     Card *Player::canUseCard(const std::string &cardType) {
@@ -167,7 +214,7 @@ using namespace mycatan;
         static std::unordered_map<std::string, std::vector<size_t>> resourceRequirements = {
                 {"settlement",      {1, 1, 1, 1}},
                 {"road",            {1, 1, 0, 0}},
-                {"city",            {0, 2, 3, 0}},
+                {"city",           {0, 2, 3, 0}},
                 {"developmentCard", {0, 1, 1, 1}}
         };
 
@@ -198,6 +245,10 @@ using namespace mycatan;
     std::vector<Card *> Player::getOwnedCards() {
         return ownedCards;
     }
+   
+    size_t Player::getKnightCount() const { 
+        return knightCount;
+     }
 
 // Setters
     void Player::setTurn(bool state) {

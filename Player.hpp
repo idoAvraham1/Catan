@@ -19,12 +19,19 @@ namespace mycatan {
         void notifyDiceRoll(size_t diceRoll);
         size_t rollDice();
 
+        // TODO : add trade method 
+
+        //Knight methods
+        void addKnight();
+        void removeKnight();
+
         // Card methods
         void buyDevelopmentCard();
         void useMonopolyCard(Resources giveMeThatResource);
         void useYearOfPlentyCard(Resources resource1, Resources resource2);
-        void use3KnightCards();
+        void getBiggestArmyCard();
         void useWinningPointsCard();
+        void deleteOwnedCards();
 
         // Resource methods
         void addResource(Resources resource, size_t amount);
@@ -37,6 +44,8 @@ namespace mycatan {
         std::vector<Player*> getOtherPlayers();
         [[nodiscard]] size_t getWinningPoints() const;
         std::vector<Card*> getOwnedCards() ;
+        size_t getKnightCount() const;
+
         // Setters
         void setTurn(bool state);
 
@@ -48,6 +57,7 @@ namespace mycatan {
         std::vector<Card*> ownedCards;
         bool isMyTurn;
         int winning_points;
+        size_t knightCount;
 
         // Private methods
         void handleDiceRoll(size_t diceRoll);

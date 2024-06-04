@@ -64,6 +64,7 @@ namespace mycatan {
         [[nodiscard]] std::string getType() const override;
     };
 
+
 } // namespace mycatan
 
 #endif // CATAN_DEVELOPMENTCARD_HPP

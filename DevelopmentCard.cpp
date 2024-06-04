@@ -50,4 +50,6 @@ namespace mycatan {
     RoadCard::RoadCard() : Card("Road") {}
     std::string RoadCard::getType() const {return type;}
 
+
+
 } // namespace mycatan

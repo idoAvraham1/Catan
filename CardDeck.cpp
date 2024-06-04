@@ -11,9 +11,7 @@ CardDeck::CardDeck() {
 }
 
 CardDeck::~CardDeck() {
-    for (Card* card : cards) {
-        delete card;
-    }
+    cleanUp();
 }
 
 CardDeck& CardDeck::getInstance() {
@@ -25,7 +23,7 @@ void CardDeck::initializeDeck() {
     if (!cards.empty()) return;  // Avoid reinitializing if already done
 
     // Add Knight cards
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 14; ++i) {
         cards.push_back(new KnightCard());
     }
 
@@ -45,7 +43,7 @@ void CardDeck::initializeDeck() {
     }
 
     // Add Victory Point cards
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 5; ++i) {
         cards.push_back(new WinningPointsCard());
     }
 
@@ -60,19 +58,31 @@ void CardDeck::shuffleDeck() {
 }
 
 Card* CardDeck::drawCard() {
-    CardDeck& instance = getInstance(); // Ensure the deck is initialized
-
     if (cards.empty()) {
         throw std::runtime_error("Cannot draw a card. The deck is empty.");
     }
 
     Card* drawnCard = cards.back();
     cards.pop_back();
-    std::cout << "Drew a " << drawnCard->getType() << "." << std::endl;
     return drawnCard;
 }
 
-size_t CardDeck::getDeckSize(){
+size_t CardDeck::getDeckSize() {
     return cards.size();
 }
 
+BiggestArmyCard* CardDeck::getBiggestArmyCard(){
+    // verify that biggest army cards left in the deck 
+    if(BiggestArmyCardsInDeck == 0)
+        throw std::runtime_error("No more biggest army cards in the deck!");
+
+    // create a new biggest army card and return to player 
+    BiggestArmyCard* biggestArmyCard = new BiggestArmyCard();
+    return biggestArmyCard;
+}
+void CardDeck::cleanUp(){
+    for (Card* card : cards) {
+        delete card;
+    }
+    cards.clear();
+}

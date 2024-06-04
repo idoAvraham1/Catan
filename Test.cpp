@@ -7,6 +7,7 @@
 #include "Player.hpp"
 #include "TestPlayer.hpp"
 #include "DevelopmentCard.hpp"
+#include "CardDeck.hpp"
 
 using namespace std;
 
@@ -114,7 +115,6 @@ TEST_CASE("Test cards usage"){
          * 1. Add a Year of Plenty card to player p1.
          * 2. Set p1's turn to true.
          * 3. Use the Year of Plenty card to gain one Brick and one Wheat resource.
-         * 4. Verify that the Year of Plenty card is marked as used.
          * 5. Verify that p1's resource counts for Brick and Wheat are updated correctly.
          * 6. Verify that p1's turn ends after using the card.
          */
@@ -123,33 +123,24 @@ TEST_CASE("Test cards usage"){
         mycatan::TestPlayer::addCardToPlayer(p1, yearOfPlentyCard);
         p1.setTurn(true);
         p1.useYearOfPlentyCard(Resources::Brick, Resources::Wheat);
-        CHECK(yearOfPlentyCard->isUsed() == true);
         CHECK(mycatan::TestPlayer::getResourceCount(p1, Resources::Brick) == 1);
         CHECK(mycatan::TestPlayer::getResourceCount(p1, Resources::Wheat) == 1);
         CHECK(!p1.getMyTurn());
-        delete yearOfPlentyCard;
+
     }
 
-    SUBCASE("Test Winning Points card usage") {
+    SUBCASE("Test Winning Points card ") {
         /**
          * This test case verifies the functionality of the Winning Points card.
          *
          * Steps:
          * 1. Add a Winning Points card to player p1.
-         * 2. Set p1's turn to true.
-         * 3. Use the Winning Points card to gain 2 winning points.
          * 4. Verify that p1's winning points are updated correctly.
-         * 5. Verify that the Winning Points card is marked as used.
-         * 6. Verify that p1's turn ends after using the card.
          */
 
         auto* winningPointsCard = new mycatan::WinningPointsCard();
         mycatan::TestPlayer::addCardToPlayer(p1, winningPointsCard);
-        p1.setTurn(true);
-        p1.useWinningPointsCard();
-        CHECK(p1.getWinningPoints() == 2);
-        CHECK(winningPointsCard->isUsed() == true);
-        CHECK(!p1.getMyTurn());
+        CHECK(p1.getWinningPoints() == 1);
         delete winningPointsCard;
     }
 
@@ -163,7 +154,6 @@ TEST_CASE("Test cards usage"){
          * 3. Set p1's turn to true.
          * 4. Use the Monopoly card to collect all Brick resources from p2 and p3.
          * 5. Verify that p1 collected the correct number of Bricks from p2 and p3.
-         * 6. Verify that the Monopoly card is marked as used.
          * 7. Verify that the Brick resources of p2 and p3 are updated correctly (set to 0).
          * 8. Verify that p1's turn ends after using the card.
          */
@@ -180,48 +170,67 @@ TEST_CASE("Test cards usage"){
 
         // Check if p1 collected the correct number of bricks from p2 and p3
         CHECK(mycatan::TestPlayer::getResourceCount(p1, Resources::Brick) == 8);
-        CHECK(monopolyCard->isUsed() == true);
         // Check that the bricks decreased from p2 and p3
         CHECK(mycatan::TestPlayer::getResourceCount(p2, Resources::Brick) == 0);
         CHECK(mycatan::TestPlayer::getResourceCount(p3, Resources::Brick) == 0);
         // Check that p1 ended his turn after using the card
         CHECK(!p1.getMyTurn());
 
-        delete monopolyCard;
     }
 
+    SUBCASE("Test BiggestArmyCard"){
+        /**
+         * This test case verifies the functionality of the three knights card card.
+         *
+         * Steps:
+         * 1. Add 3 knight cards to player p1.
+         * 2. Set p1's turn to true.
+         * 3. get the three knights card to gain 2 winning points.
+         * 4. Verify that p1's winning points are updated correctly.
+         * 5. Verify that that the biggest army card is marked as used
+         * 6. Verify that p1's turn ends after using the card.
+         */
+        
+
+         // create 3 knight cards
+         auto* firstKnightCard = new mycatan::KnightCard();
+         auto* secondKnightCard = new mycatan::KnightCard();
+         auto* thirdKnightCard = new mycatan::KnightCard();
+
+         // add the cards to p1 
+         mycatan::TestPlayer::addCardToPlayer(p1, firstKnightCard);
+         mycatan::TestPlayer::addCardToPlayer(p1, secondKnightCard);
+         mycatan::TestPlayer::addCardToPlayer(p1, thirdKnightCard);
+
+         //set p1 turn to true, use the card
+         p1.setTurn(true);
+         p1.getBiggestArmyCard();
+
+         // verify that p1 own 4 cards , and  3 knight , gained 2 winning points
+         CHECK(p1.getOwnedCards().size() == 4);
+         CHECK(p1.getMyTurn() == false);
+         CHECK(p1.getWinningPoints() == 2);
+
+         // clean up
+         p1.deleteOwnedCards();
+        }
 }
 
-TEST_CASE("Test card Deck "){
-
-    SUBCASE("Draw card from deck") {
-        /**
-            * This test case verifies the functionality of the CardDeck and the ability of a player to buy a development card.
-            *
-            * Steps:
-            * 1. Initialize the CardDeck.
-            * 2. Draw a card and verify its type and that it is correctly removed from the deck.
-            * 3. Create a player and ensure they can buy a development card if they have enough resources and it's their turn.
-            * 4. Verify that the card is added to the player's owned cards and that the player's resources are decremented correctly.
-        */
-        // Draw a card
-        mycatan::Card* drawnCard = mycatan::CardDeck::drawCard();
-
-        // Check that the card is valid
-        REQUIRE(drawnCard != nullptr);
-
-        // Ensure the deck size decreases by 1
-        size_t initialDeckSize = mycatan::CardDeck::getDeckSize();
-        mycatan::CardDeck::drawCard();  // Draw another card
-        CHECK(mycatan::CardDeck::getDeckSize() == initialDeckSize - 1);
-
-        // Clean up
-        delete drawnCard;
-    }
+TEST_CASE("Test card Deck ") {
 
     SUBCASE("Player buys development card") {
+        /**
+         * This test case verifies the functionality of the CardDeck and the ability of a player to buy a development card.
+         *
+         * Steps:
+         * 1. Initialize the CardDeck.
+         * 2. Draw a card and verify its type and that it is correctly removed from the deck.
+         * 3. Create a player and ensure they can buy a development card if they have enough resources and it's their turn.
+         * 4. Verify that the card is added to the player's owned cards and that the player's resources are decremented correctly.
+         */
+
         // Create a player with sufficient resources
-        mycatan::Player p1("Player 1");
+        mycatan::Player p1("ido");
         p1.setTurn(true);
 
         // Ensure the player has enough resources
@@ -229,8 +238,17 @@ TEST_CASE("Test card Deck "){
         p1.addResource(Resources::Wood, 1);
         p1.addResource(Resources::Wool, 1);
 
+        // Get an instance of the card deck  
+        mycatan::CardDeck& deck = mycatan::CardDeck::getInstance();
+
+        // Save the original deck size
+        size_t initialDeckSize = deck.getDeckSize();
+
         // Buy a development card
         p1.buyDevelopmentCard();
+
+        // Ensure the deck size decreases by 1
+        CHECK(deck.getDeckSize() == initialDeckSize - 1);
 
         // Verify that the player owns one more card
         CHECK(p1.getOwnedCards().size() == 1);
@@ -243,25 +261,30 @@ TEST_CASE("Test card Deck "){
         // Verify the card's owner is set correctly
         mycatan::Card* ownedCard = p1.getOwnedCards().back();
         CHECK(ownedCard->getOwner() == p1.getName());
+
+        // Cleanup the deck and the drawn card
+        deck.cleanUp();
+        delete ownedCard;
     }
 
-    SUBCASE("Draw all the cards from the deck"){
+    SUBCASE("Draw all the cards from the deck") {
         /**
-      * This subcase verifies that all cards can be drawn from the deck and the deck becomes empty.
-      *
-      * Steps:
-      * 1. Continuously draw cards until the deck is empty.
-      * 2. Verify that the correct number of cards are drawn.
-      * 3. Verify that the deck is empty after drawing all cards.
-      * 4. attempt to draw another card once the deck is empty
-      */
+         * This subcase verifies that all cards can be drawn from the deck and the deck becomes empty.
+         *
+         * Steps:
+         * 1. Continuously draw cards until the deck is empty.
+         * 2. Verify that the correct number of cards are drawn.
+         * 3. Verify that the deck is empty after drawing all cards.
+         * 4. Attempt to draw another card once the deck is empty.
+         */
 
-        size_t initialDeckSize = mycatan::CardDeck::getDeckSize();
+        mycatan::CardDeck& deck = mycatan::CardDeck::getInstance();
+        size_t initialDeckSize = deck.getDeckSize();
         std::vector<mycatan::Card*> drawnCards;
 
         // Draw all cards
         for (size_t i = 0; i < initialDeckSize; ++i) {
-            mycatan::Card* card = mycatan::CardDeck::drawCard();
+            mycatan::Card* card = deck.drawCard();
             REQUIRE(card != nullptr);
             drawnCards.push_back(card);
         }
@@ -270,12 +293,12 @@ TEST_CASE("Test card Deck "){
         CHECK(drawnCards.size() == initialDeckSize);
 
         // Verify that the deck is empty
-        CHECK(mycatan::CardDeck::getDeckSize() == 0);
+        CHECK(deck.getDeckSize() == 0);
 
         // Try to draw another card after the deck is empty and catch the exception
         bool exceptionCaught = false;
         try {
-            mycatan::CardDeck::drawCard();
+            deck.drawCard();
         } catch (const std::runtime_error& e) {
             exceptionCaught = true;
             CHECK(std::string(e.what()) == "Cannot draw a card. The deck is empty.");
@@ -287,7 +310,6 @@ TEST_CASE("Test card Deck "){
             delete card;
         }
     }
-
 }
 
 
