@@ -14,12 +14,12 @@ namespace mycatan {
         static CardDeck& getInstance();
         static Card* drawCard();
         static size_t getDeckSize();
+         ~CardDeck();
 
     private:
         static std::vector<Card*> cards;
 
         CardDeck(); // Private constructor
-        ~CardDeck();
         CardDeck(const CardDeck&) = delete; // Delete copy constructor
         CardDeck& operator=(const CardDeck&) = delete; // Delete assignment operator
 

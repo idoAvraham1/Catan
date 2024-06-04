@@ -21,12 +21,12 @@ TEST_CASE("Turns logic ") {
 
     SUBCASE("Starting player index is within valid range") {
         size_t startingPlayerIndex = catan.chooseStartingPlayer();
-        CHECK((0 <= startingPlayerIndex && startingPlayerIndex <= 2));
+        CHECK(( 0 <= startingPlayerIndex && startingPlayerIndex <= 2));
     }
 
     SUBCASE("Player turn is correctly set") {
         size_t startingPlayerIndex = catan.chooseStartingPlayer();
-        CHECK((0 <= startingPlayerIndex && startingPlayerIndex <= 2));
+        CHECK(( 0<= startingPlayerIndex && startingPlayerIndex <= 2));
         // Check if the correct player turn is set
         CHECK(p1.getMyTurn() ==(startingPlayerIndex == 0)); // p1's turn is set to true if and only if startingPlayerIndex is 0.
         CHECK(p2.getMyTurn() == (startingPlayerIndex == 1));
@@ -34,7 +34,7 @@ TEST_CASE("Turns logic ") {
     }
 
     SUBCASE("Other players are added correctly") {
-        size_t startingPlayerIndex = catan.chooseStartingPlayer();
+        catan.chooseStartingPlayer();
         auto players = catan.getPlayers();
 
         CHECK(p1.getOtherPlayers().size() == 2);
@@ -127,6 +127,7 @@ TEST_CASE("Test cards usage"){
         CHECK(mycatan::TestPlayer::getResourceCount(p1, Resources::Brick) == 1);
         CHECK(mycatan::TestPlayer::getResourceCount(p1, Resources::Wheat) == 1);
         CHECK(!p1.getMyTurn());
+        delete yearOfPlentyCard;
     }
 
     SUBCASE("Test Winning Points card usage") {
@@ -149,6 +150,7 @@ TEST_CASE("Test cards usage"){
         CHECK(p1.getWinningPoints() == 2);
         CHECK(winningPointsCard->isUsed() == true);
         CHECK(!p1.getMyTurn());
+        delete winningPointsCard;
     }
 
     SUBCASE("Test Monopoly card usage") {
@@ -184,6 +186,8 @@ TEST_CASE("Test cards usage"){
         CHECK(mycatan::TestPlayer::getResourceCount(p3, Resources::Brick) == 0);
         // Check that p1 ended his turn after using the card
         CHECK(!p1.getMyTurn());
+
+        delete monopolyCard;
     }
 
 }

@@ -3,14 +3,8 @@ using namespace mycatan;
 
 // Constructor
     Player::Player(std::string name)
-            : name(std::move(name)), resources(5, 0), winning_points(0),
-              othersPlayers(2, nullptr), isMyTurn(false) {
-
-        // Initialize player resources to be enough for 2 settlements and 2 roads
-        resources[BRICK] = 0;
-        resources[WOOD] = 0;
-        resources[WOOL] = 0;
-        resources[WHEAT] = 0;
+            : name(std::move(name)), resources(5, 0), othersPlayers(2, nullptr),
+             winning_points(0), isMyTurn(false) {
     }
 
 // General methods
@@ -155,7 +149,7 @@ using namespace mycatan;
 
 
     void Player::decreaseResourcesAfterAction(const std::string &action) {
-        static std::unordered_map<std::string, std::vector<int>> resourceRequirements = {
+        static std::unordered_map<std::string, std::vector<size_t>> resourceRequirements = {
                 {"settlement",      {1, 1, 1, 1}},
                 {"road",            {1, 1, 0, 0}},
                 {"city",            {0, 2, 3, 0}},
@@ -170,7 +164,7 @@ using namespace mycatan;
     }
 
     bool Player::hasEnoughResources(const std::string &action) const {
-        static std::unordered_map<std::string, std::vector<int>> resourceRequirements = {
+        static std::unordered_map<std::string, std::vector<size_t>> resourceRequirements = {
                 {"settlement",      {1, 1, 1, 1}},
                 {"road",            {1, 1, 0, 0}},
                 {"city",            {0, 2, 3, 0}},
