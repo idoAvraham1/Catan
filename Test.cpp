@@ -312,4 +312,66 @@ TEST_CASE("Test card Deck ") {
     }
 }
 
+TEST_CASE("Test trade"){
+    mycatan::Player p1("ido");
+    mycatan::Player p2("shoam");
+
+
+    SUBCASE("Test valid resources trade"){
+        //Add the players enough resources to trade
+        p1.addResource(Resources::Wheat, 4);
+        p2.addResource(Resources::Wood, 5);
+
+        p1.setTurn(true);
+        p1.tradeResources(&p2 , Resources::Wood , Resources::Wheat , 2 , 3 );
+
+       // verify that the resources amount updated according to the trade preformed by the players
+       CHECK(mycatan::TestPlayer::getResourceCount(p1, Resources::Wood) == 2);
+       CHECK(mycatan::TestPlayer::getResourceCount(p2, Resources::Wheat) == 3);
+
+    }
+
+    SUBCASE("Test inValid resources trade"){
+        // Scenario: Player 1 doesn't have enough resources to trade
+        CHECK_THROWS(p1.tradeResources(&p2 , Resources::Wood , Resources::Wheat , 6 , 3 ));
+        // Scenario: Player 2 doesn't have enough resources to trade
+        CHECK_THROWS(p1.tradeResources(&p2 , Resources::Wood , Resources::Wheat , 2 , 6 ));
+        // Scenario: Player 1 wants to trade more resources than they have
+        p1.addResource(Resources::Wheat, 2);
+        CHECK_THROWS(p1.tradeResources(&p2 , Resources::Wheat , Resources::Wood , 3 , 2 ));
+    }
+
+    SUBCASE("Test valid card trade"){
+        // add to the players card to trade for
+        auto* yearOfPlentyCard = new mycatan::YearOfPlentyCard();
+        mycatan::TestPlayer::addCardToPlayer(p1, yearOfPlentyCard);
+
+        auto* monopolyCard = new mycatan::MonopolyCard();
+        mycatan::TestPlayer::addCardToPlayer(p2, monopolyCard);
+
+        p1.setTurn(true);
+        p1.tradeDevelopmentCards(&p2, "Monopoly" , "Year of Plenty");
+
+        // verify that both players have 1 owned card
+        CHECK(p1.getOwnedCards().size() == 1);
+        CHECK(p2.getOwnedCards().size() == 1);
+
+        //verify that monopoly card owner is ido and vice versa
+        CHECK(monopolyCard->getOwner() == "ido");
+        CHECK(yearOfPlentyCard->getOwner() == "shoam");
+
+
+        //clean up
+        delete yearOfPlentyCard;
+        delete monopolyCard;
+    }
+
+    SUBCASE("Test inValid card trade"){
+        // Scenario: Player 1 doesn't own the specified card to trade
+        CHECK_THROWS(p1.tradeDevelopmentCards(&p2, "SomeNonexistentCard" , "Year of Plenty"));
+        // Scenario: Player 2 doesn't own the specified card to trade
+        CHECK_THROWS(p1.tradeDevelopmentCards(&p2, "Monopoly" , "SomeNonexistentCard"));
+    }
+
+}
 

@@ -25,7 +25,7 @@
 // enums
 enum class Resources { Brick , Wheat , Wool , Wood , Desert };
 enum class Lands { Forest, Hills, Pasture, Fields, Mountains, Desert };
-enum class CardsTypes { Knight , Monopoly , YearOfPlenty , WinningPoints};
+
 
 inline std::string resourceToString(Resources resource) {
     switch (resource) {
