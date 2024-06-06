@@ -25,4 +25,13 @@ add_executable(Catan main.cpp
         DevelopmentCardManagement.hpp
         ResourceManagement.cpp
         ResourceManagement.hpp
+        Edge.cpp
+        Edge.hpp
+        Vertex.cpp
+        Vertex.hpp
+        Vertex.hpp
+        Tile.cpp
+        Tile.hpp
+        Tile.hpp
+        TilesMap.hpp
 )

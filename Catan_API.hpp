@@ -1,9 +1,8 @@
-
 #ifndef CATAN_CATAN_API_HPP
 #define CATAN_CATAN_API_HPP
 
-
 // includes
+#include <map>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -26,7 +25,6 @@
 // enums
 enum class Resources { Brick , Wheat , Wool , Wood , Ore, Desert };
 enum class Lands { Forest, Hills, Pasture, Fields, Mountains, Desert };
-
 
 inline std::string resourceToString(Resources resource) {
     switch (resource) {
@@ -51,4 +49,5 @@ inline size_t resourceToInt(Resources resource){
     }
 }
 
-#endif //CATAN_CATAN_API_HPP
+
+#endif // CATAN_CATAN_API_HPP

@@ -6,6 +6,7 @@
 #include "CardDeck.hpp"
 #include "DevelopmentCardManagement.hpp"
 #include "ResourceManagement.hpp"
+#include "Board.hpp"
 
 
 namespace mycatan {
@@ -39,6 +40,7 @@ namespace mycatan {
         [[nodiscard]] size_t getWinningPoints() const;
         std::vector<Card*> getOwnedCards() ;
         [[nodiscard]] size_t getKnightCount() const;
+        [[nodiscard]]  std::vector<Edge*> getRoads() const;
 
         // Setters
         void setTurn(bool state);
@@ -49,6 +51,9 @@ namespace mycatan {
         std::vector<size_t> resources;
         std::vector<Player*> othersPlayers;
         std::vector<Card*> ownedCards;
+        std::vector<Edge*> roads;
+        std::vector<Vertex*> settlement;
+
         bool isMyTurn;
         int winning_points;
         size_t knightCount;

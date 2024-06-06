@@ -8,17 +8,21 @@
 #include "TestPlayer.hpp"
 #include "DevelopmentCard.hpp"
 #include "CardDeck.hpp"
+#include "Board.hpp"
+#include "Tile.hpp"
+#include "TilesMap.hpp"
 
+using namespace mycatan;
 using namespace std;
 
 TEST_CASE("Turns logic ") {
 
     // create 3 players
-    mycatan::Player p1("ido");
-    mycatan::Player p2("shoam");
-    mycatan::Player p3("shlomi");
+    Player p1("ido");
+    Player p2("shoam");
+    Player p3("shlomi");
 
-    mycatan::Catan catan(p1, p2, p3);
+    Catan catan(p1, p2, p3);
 
     SUBCASE("Starting player index is within valid range") {
         size_t startingPlayerIndex = catan.chooseStartingPlayer();
@@ -29,24 +33,24 @@ TEST_CASE("Turns logic ") {
         size_t startingPlayerIndex = catan.chooseStartingPlayer();
         CHECK(( 0<= startingPlayerIndex && startingPlayerIndex <= 2));
         // Check if the correct player turn is set
-        CHECK(p1.getMyTurn() ==(startingPlayerIndex == 0)); // p1's turn is set to true if and only if startingPlayerIndex is 0.
-        CHECK(p2.getMyTurn() == (startingPlayerIndex == 1));
-        CHECK(p3.getMyTurn() == (startingPlayerIndex == 2));
+        CHECK( (p1.getMyTurn() ==(startingPlayerIndex == 0)) ); // p1's turn is set to true if and only if startingPlayerIndex is 0.
+        CHECK( (p2.getMyTurn() == (startingPlayerIndex == 1)) );
+        CHECK( (p3.getMyTurn() == (startingPlayerIndex == 2)) ) ;
     }
 
     SUBCASE("Other players are added correctly") {
         catan.chooseStartingPlayer();
         auto players = catan.getPlayers();
 
-        CHECK(p1.getOtherPlayers().size() == 2);
+        CHECK( (p1.getOtherPlayers().size() == 2) );
         CHECK(p1.getOtherPlayers()[NEXT_PLAYER]->getName() == "shoam");
         CHECK(p1.getOtherPlayers()[BEFORE_PLAYER]->getName() == "shlomi");
 
-        CHECK(p2.getOtherPlayers().size() == 2);
-        CHECK(p2.getOtherPlayers()[NEXT_PLAYER]->getName() == "shlomi");
-        CHECK(p2.getOtherPlayers()[BEFORE_PLAYER]->getName() == "ido");
+        CHECK( (p2.getOtherPlayers().size() == 2) );
+        CHECK( (p2.getOtherPlayers()[NEXT_PLAYER]->getName() == "shlomi") );
+        CHECK( (p2.getOtherPlayers()[BEFORE_PLAYER]->getName() == "ido") );
 
-        CHECK(p3.getOtherPlayers().size() == 2);
+        CHECK( (p3.getOtherPlayers().size() == 2) );
         CHECK(p3.getOtherPlayers()[NEXT_PLAYER]->getName() == "ido");
         CHECK(p3.getOtherPlayers()[BEFORE_PLAYER]->getName() == "shoam");
 
@@ -83,11 +87,11 @@ TEST_CASE("Turns logic ") {
 
 TEST_CASE("Dice logic"){
     // create 3 players
-    mycatan::Player p1("ido");
-    mycatan::Player p2("shoam");
-    mycatan::Player p3("shlomi");
+    Player p1("ido");
+    Player p2("shoam");
+    Player p3("shlomi");
 
-    mycatan::Catan catan(p1, p2, p3);
+    Catan catan(p1, p2, p3);
 
     SUBCASE("Rolled dice result  is within valid range") {
         size_t startingPlayerIndex = catan.chooseStartingPlayer();
@@ -101,9 +105,9 @@ TEST_CASE("Dice logic"){
 
 TEST_CASE("Test cards usage"){
     // create 3 players
-    mycatan::Player p1("ido");
-    mycatan::Player p2("shoam");
-    mycatan::Player p3("shlomi");
+    Player p1("ido");
+    Player p2("shoam");
+    Player p3("shlomi");
     p1.addOthersPlayers(p2,p3);
     //mycatan::Catan catan(p1, p2, p3);
 
@@ -123,8 +127,8 @@ TEST_CASE("Test cards usage"){
         mycatan::TestPlayer::addCardToPlayer(p1, yearOfPlentyCard);
         p1.setTurn(true);
         p1.useYearOfPlentyCard(Resources::Brick, Resources::Wheat);
-        CHECK(mycatan::TestPlayer::getResourceCount(p1, Resources::Brick) == 1);
-        CHECK(mycatan::TestPlayer::getResourceCount(p1, Resources::Wheat) == 1);
+        CHECK( (TestPlayer::getResourceCount(p1, Resources::Brick) == 1) );
+        CHECK((TestPlayer::getResourceCount(p1, Resources::Wheat) == 1) );
         CHECK(!p1.getMyTurn());
 
     }
@@ -139,8 +143,8 @@ TEST_CASE("Test cards usage"){
          */
 
         auto* winningPointsCard = new mycatan::WinningPointsCard();
-        mycatan::TestPlayer::addCardToPlayer(p1, winningPointsCard);
-        CHECK(p1.getWinningPoints() == 1);
+        TestPlayer::addCardToPlayer(p1, winningPointsCard);
+        CHECK( (p1.getWinningPoints() == 1) );
         delete winningPointsCard;
     }
 
@@ -159,20 +163,20 @@ TEST_CASE("Test cards usage"){
          */
 
         auto* monopolyCard = new mycatan::MonopolyCard();
-        mycatan::TestPlayer::addCardToPlayer(p1, monopolyCard);
+        TestPlayer::addCardToPlayer(p1, monopolyCard);
 
         // Simulate resource addition to other players
-        mycatan::TestPlayer::addResources(p2,Resources::Brick, 5);
-        mycatan::TestPlayer::addResources(p3,Resources::Brick, 3);
+        TestPlayer::addResources(p2,Resources::Brick, 5);
+       TestPlayer::addResources(p3,Resources::Brick, 3);
 
         p1.setTurn(true);
         p1.useMonopolyCard(Resources::Brick);
 
         // Check if p1 collected the correct number of bricks from p2 and p3
-        CHECK(mycatan::TestPlayer::getResourceCount(p1, Resources::Brick) == 8);
+        CHECK( (TestPlayer::getResourceCount(p1, Resources::Brick) == 8) );
         // Check that the bricks decreased from p2 and p3
-        CHECK(mycatan::TestPlayer::getResourceCount(p2, Resources::Brick) == 0);
-        CHECK(mycatan::TestPlayer::getResourceCount(p3, Resources::Brick) == 0);
+        CHECK( (TestPlayer::getResourceCount(p2, Resources::Brick) == 0) );
+        CHECK( (TestPlayer::getResourceCount(p3, Resources::Brick) == 0) );
         // Check that p1 ended his turn after using the card
         CHECK(!p1.getMyTurn());
 
@@ -193,26 +197,26 @@ TEST_CASE("Test cards usage"){
         
 
          // create 3 knight cards
-         auto* firstKnightCard = new mycatan::KnightCard();
-         auto* secondKnightCard = new mycatan::KnightCard();
-         auto* thirdKnightCard = new mycatan::KnightCard();
+         auto* firstKnightCard = new KnightCard();
+         auto* secondKnightCard = new KnightCard();
+         auto* thirdKnightCard = new KnightCard();
 
          // add the cards to p1 
-         mycatan::TestPlayer::addCardToPlayer(p1, firstKnightCard);
-         mycatan::TestPlayer::addCardToPlayer(p1, secondKnightCard);
-         mycatan::TestPlayer::addCardToPlayer(p1, thirdKnightCard);
+         TestPlayer::addCardToPlayer(p1, firstKnightCard);
+         TestPlayer::addCardToPlayer(p1, secondKnightCard);
+         TestPlayer::addCardToPlayer(p1, thirdKnightCard);
 
          //set p1 turn to true, use the card
          p1.setTurn(true);
          p1.getBiggestArmyCard();
 
-         // verify that p1 own 4 cards , and  3 knight , gained 2 winning points
-         CHECK(p1.getOwnedCards().size() == 4);
-         CHECK(p1.getMyTurn() == false);
-         CHECK(p1.getWinningPoints() == 2);
+         // verify that p1 own 4 cards, and 3 knights , gained 2 winning points
+         CHECK( (p1.getOwnedCards().size() == 4) );
+         CHECK( (p1.getMyTurn() == false) );
+         CHECK( (p1.getWinningPoints() == 2) );
 
          // clean up
-         mycatan::TestPlayer::deletePOwnedCards(p1);
+         TestPlayer::deletePOwnedCards(p1);
         }
 }
 
@@ -230,13 +234,13 @@ TEST_CASE("Test card Deck ") {
          */
 
         // Create a player with sufficient resources
-        mycatan::Player p1("ido");
+        Player p1("ido");
         p1.setTurn(true);
 
         // Ensure the player has enough resources
-        mycatan::TestPlayer::addResources(p1,Resources::Wheat, 1);
-        mycatan::TestPlayer::addResources(p1,Resources::Wood, 1);
-        mycatan::TestPlayer::addResources(p1,Resources::Wool, 1);
+        TestPlayer::addResources(p1,Resources::Wheat, 1);
+        TestPlayer::addResources(p1,Resources::Wood, 1);
+        TestPlayer::addResources(p1,Resources::Wool, 1);
 
         // Save the original deck size
         size_t initialDeckSize = mycatan::CardDeck::getDeckSize();
@@ -247,18 +251,18 @@ TEST_CASE("Test card Deck ") {
         size_t newDeckSize =  mycatan::CardDeck::getDeckSize();
 
         // Ensure the deck size decreases by 1
-        CHECK(newDeckSize == initialDeckSize - 1);
+        CHECK( (newDeckSize == initialDeckSize - 1) );
 
         // Verify that the player owns one more card
-        CHECK(p1.getOwnedCards().size() == 1);
+        CHECK( (p1.getOwnedCards().size() == 1) );
 
         // Verify the player's resources are decremented correctly
-        CHECK(mycatan::TestPlayer::getResourceCount(p1, Resources::Wheat) == 0);
-        CHECK(mycatan::TestPlayer::getResourceCount(p1, Resources::Wood) == 0);
-        CHECK(mycatan::TestPlayer::getResourceCount(p1, Resources::Wool) == 0);
+        CHECK( (TestPlayer::getResourceCount(p1, Resources::Wheat) == 0) );
+        CHECK( (TestPlayer::getResourceCount(p1, Resources::Wood) == 0) );
+        CHECK( (TestPlayer::getResourceCount(p1, Resources::Wool) == 0) );
 
         // Verify the card's owner is set correctly
-        mycatan::Card* ownedCard = p1.getOwnedCards().back();
+        Card* ownedCard = p1.getOwnedCards().back();
         CHECK(ownedCard->getOwner() == p1.getName());
 
         // Cleanup the deck and the drawn card
@@ -278,27 +282,27 @@ TEST_CASE("Test card Deck ") {
          */
 
 
-        size_t initialDeckSize = mycatan::CardDeck::getDeckSize();
+        size_t initialDeckSize = CardDeck::getDeckSize();
         std::vector<mycatan::Card*> drawnCards;
 
         // Draw all cards
         for (size_t i = 0; i < initialDeckSize; ++i) {
             mycatan::Card* card = mycatan::CardDeck::drawCard();
-            REQUIRE(card != nullptr);
+            REQUIRE( (card != nullptr) );
             drawnCards.push_back(card);
         }
 
         // Verify that the correct number of cards is drawn
-        CHECK(drawnCards.size() == initialDeckSize);
+        CHECK( (drawnCards.size() == initialDeckSize) );
 
         // Verify that the deck is empty
-        size_t afterAllCardDrawedSize = mycatan::CardDeck::getDeckSize();
-        CHECK( afterAllCardDrawedSize == 0);
+        size_t afterAllCardDrawedSize = CardDeck::getDeckSize();
+        CHECK( (afterAllCardDrawedSize == 0) );
 
         // Try to draw another card after the deck is empty and catch the exception
         bool exceptionCaught = false;
         try {
-            mycatan::CardDeck::drawCard();
+           CardDeck::drawCard();
         } catch (const std::runtime_error& e) {
             exceptionCaught = true;
             CHECK(std::string(e.what()) == "Cannot draw a card. The deck is empty.");
@@ -325,8 +329,8 @@ TEST_CASE("Test trade"){
         p1.tradeResources(&p2 , Resources::Wood , Resources::Wheat , 2 , 3 );
 
        // verify that the resources amount updated according to the trade preformed by the players
-       CHECK(mycatan::TestPlayer::getResourceCount(p1, Resources::Wood) == 2);
-       CHECK(mycatan::TestPlayer::getResourceCount(p2, Resources::Wheat) == 3);
+       CHECK( (mycatan::TestPlayer::getResourceCount(p1, Resources::Wood) == 2) );
+       CHECK( (mycatan::TestPlayer::getResourceCount(p2, Resources::Wheat) == 3));
 
     }
 
@@ -341,7 +345,7 @@ TEST_CASE("Test trade"){
     }
 
     SUBCASE("Test valid card trade"){
-        // add to the players card to trade for
+        // add to the player card to trade for
         auto* yearOfPlentyCard = new mycatan::YearOfPlentyCard();
         mycatan::TestPlayer::addCardToPlayer(p1, yearOfPlentyCard);
 
@@ -352,8 +356,8 @@ TEST_CASE("Test trade"){
         p1.tradeDevelopmentCards(&p2, "Monopoly" , "Year of Plenty");
 
         // verify that both players have 1 owned card
-        CHECK(p1.getOwnedCards().size() == 1);
-        CHECK(p2.getOwnedCards().size() == 1);
+        CHECK( (p1.getOwnedCards().size() == 1) );
+        CHECK( (p2.getOwnedCards().size() == 1) );
 
         //verify that monopoly card owner is ido and vice versa
         CHECK(monopolyCard->getOwner() == "ido");
@@ -373,4 +377,116 @@ TEST_CASE("Test trade"){
     }
 
 }
+
+TEST_CASE("Test Board") {
+    // Initialize the board
+    mycatan::Board *board = mycatan::Board::getInstance();
+
+    SUBCASE("Test board vertices initialization") {
+        // Verify each tile on the board
+        for (const auto& [coordinates, config] : Board::tileConfigurations) {
+            // Find the tile inside the board
+            Tile* tile = Board::getInstance()->getTile(config.numberToken, config.resourceType);
+
+            // Retrieve the coordinates
+            size_t x = coordinates.first;
+            size_t y = coordinates.second;
+
+            // Calculate the top-left vertex for the hexagon
+            size_t u = 2 * (x - 1) + y;
+            size_t v = y;
+
+            // Check if the tile was found
+            REQUIRE((tile != nullptr));
+
+            // Check the tile's resource type and number token
+            CHECK((tile->getResourceType() == config.resourceType));
+            CHECK((tile->getId() == config.numberToken));
+
+            // Verify the vertices of the tile
+            std::vector<Vertex*> vertices = tile->getVertices();
+            REQUIRE((vertices.size() == 6));
+
+            // Check if the top-left vertex is part of the tile's vertices
+            Vertex* topLeftVertex = Board::getInstance()->getVertex(u, v);
+            REQUIRE((topLeftVertex != nullptr));
+
+            bool found = false;
+            for (Vertex* vertex : vertices) {
+                if (vertex == topLeftVertex) {
+                    found = true;
+                    break;
+                }
+            }
+            CHECK(found);
+
+            // Further verify by checking all expected vertices coordinates
+            std::vector<std::pair<size_t, size_t>> expectedVertices = {
+                    {u, v}, {u + 1, v}, {u + 2, v}, {u + 2, v + 1}, {u + 1, v + 1}, {u, v + 1}
+            };
+
+            for (const auto& expected : expectedVertices) {
+                Vertex* vertex = Board::getInstance()->getVertex(expected.first, expected.second);
+                REQUIRE((vertex != nullptr));
+                found = false;
+                for (Vertex* vtx : vertices) {
+                    if (vtx == vertex) {
+                        found = true;
+                        break;
+                    }
+                }
+                CHECK(found);
+            }
+        }
+    }
+
+    SUBCASE("Test board edges initialization") {
+
+        // Verify each tile on the board
+        for (const auto& [coordinates, config] : Board::tileConfigurations) {
+            // Find the tile inside the board
+            Tile* tile = Board::getInstance()->getTile(config.numberToken, config.resourceType);
+
+            // Retrieve the coordinates
+            size_t x = coordinates.first;
+            size_t y = coordinates.second;
+
+            // Calculate the top-left vertex for the hexagon
+            size_t u = 2 * (x - 1) + y;
+            size_t v = y;
+
+            // Verify the vertices of the tile
+            std::vector<Vertex*> vertices = tile->getVertices();
+            REQUIRE((vertices.size() == 6));
+
+            // Verify the edges of the tile
+            std::vector<std::pair<Vertex*, Vertex*>> expectedEdges = {
+                    {Board::getInstance()->getVertex(u, v), Board::getInstance()->getVertex(u + 1, v)},
+                    {Board::getInstance()->getVertex(u + 1, v), Board::getInstance()->getVertex(u + 2, v)},
+                    {Board::getInstance()->getVertex(u + 2, v), Board::getInstance()->getVertex(u + 2, v + 1)},
+                    {Board::getInstance()->getVertex(u + 2, v + 1), Board::getInstance()->getVertex(u + 1, v + 1)},
+                    {Board::getInstance()->getVertex(u + 1, v + 1), Board::getInstance()->getVertex(u, v + 1)},
+                    {Board::getInstance()->getVertex(u, v + 1), Board::getInstance()->getVertex(u, v)}
+            };
+
+            std::vector<Edge*> edges = tile->getEdges();
+            REQUIRE((edges.size() == 6));
+
+            for (const auto& expectedEdge : expectedEdges) {
+                Vertex* v1 = expectedEdge.first;
+                Vertex* v2 = expectedEdge.second;
+                bool edgeFound = false;
+
+                for (Edge* edge : edges) {
+                    if ((edge->getVertex1() == v1 && edge->getVertex2() == v2) || (edge->getVertex1() == v2 && edge->getVertex2() == v1)) {
+                        edgeFound = true;
+                        break;
+                    }
+                }
+                CHECK(edgeFound);
+            }
+        }
+    }
+}
+
 

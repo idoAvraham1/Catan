@@ -88,6 +88,10 @@ std::string Player::getName() const {
     return this->name;
 }
 
+std::vector<Edge *> Player::getRoads() const {
+    return this->roads;
+}
+
 size_t Player::getWinningPoints() const {
     return this->winning_points;
 }
@@ -117,6 +121,8 @@ void Player::setTurn(bool state) {
 void Player::tradeDevelopmentCards(Player *other, const std::string &cardIn, const std::string &cardOut) {
    devCardManager->tradeDevelopmentCards(other,cardIn,cardOut);
 }
+
+
 
 
 
