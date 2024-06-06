@@ -97,6 +97,18 @@ build CMakeFiles/Catan.dir/CardDeck.cpp.obj: CXX_COMPILER__Catan_unscanned_Debug
   OBJECT_DIR = CMakeFiles\Catan.dir
   OBJECT_FILE_DIR = CMakeFiles\Catan.dir
 
+build CMakeFiles/Catan.dir/DevelopmentCardManagement.cpp.obj: CXX_COMPILER__Catan_unscanned_Debug C$:/Users/admin/CLionProjects/Catan/DevelopmentCardManagement.cpp || cmake_object_order_depends_target_Catan
+  DEP_FILE = CMakeFiles\Catan.dir\DevelopmentCardManagement.cpp.obj.d
+  FLAGS = -g -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\Catan.dir
+  OBJECT_FILE_DIR = CMakeFiles\Catan.dir
+
+build CMakeFiles/Catan.dir/ResourceManagement.cpp.obj: CXX_COMPILER__Catan_unscanned_Debug C$:/Users/admin/CLionProjects/Catan/ResourceManagement.cpp || cmake_object_order_depends_target_Catan
+  DEP_FILE = CMakeFiles\Catan.dir\ResourceManagement.cpp.obj.d
+  FLAGS = -g -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\Catan.dir
+  OBJECT_FILE_DIR = CMakeFiles\Catan.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Catan
@@ -105,7 +117,7 @@ build CMakeFiles/Catan.dir/CardDeck.cpp.obj: CXX_COMPILER__Catan_unscanned_Debug
 #############################################
 # Link the executable Catan.exe
 
-build Catan.exe: CXX_EXECUTABLE_LINKER__Catan_Debug CMakeFiles/Catan.dir/main.cpp.obj CMakeFiles/Catan.dir/Catan.cpp.obj CMakeFiles/Catan.dir/Board.cpp.obj CMakeFiles/Catan.dir/Player.cpp.obj CMakeFiles/Catan.dir/TestCounter.cpp.obj CMakeFiles/Catan.dir/Test.cpp.obj CMakeFiles/Catan.dir/DevelopmentCard.cpp.obj CMakeFiles/Catan.dir/CardDeck.cpp.obj
+build Catan.exe: CXX_EXECUTABLE_LINKER__Catan_Debug CMakeFiles/Catan.dir/main.cpp.obj CMakeFiles/Catan.dir/Catan.cpp.obj CMakeFiles/Catan.dir/Board.cpp.obj CMakeFiles/Catan.dir/Player.cpp.obj CMakeFiles/Catan.dir/TestCounter.cpp.obj CMakeFiles/Catan.dir/Test.cpp.obj CMakeFiles/Catan.dir/DevelopmentCard.cpp.obj CMakeFiles/Catan.dir/CardDeck.cpp.obj CMakeFiles/Catan.dir/DevelopmentCardManagement.cpp.obj CMakeFiles/Catan.dir/ResourceManagement.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\Catan.dir

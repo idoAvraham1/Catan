@@ -4,14 +4,17 @@
 #include "Catan_API.hpp"
 #include "DevelopmentCard.hpp"
 #include "CardDeck.hpp"
+#include "DevelopmentCardManagement.hpp"
+#include "ResourceManagement.hpp"
 
 
 namespace mycatan {
-
+    class ResourceManagement;
     class Player {
     public:
         // General methods
         explicit Player(std::string name);
+        ~Player();
         void endTurn();
         void addOthersPlayers(Player& otherPlayer0, Player& otherPlayer1);
 
@@ -19,25 +22,15 @@ namespace mycatan {
         void notifyDiceRoll(size_t diceRoll);
         size_t rollDice();
 
-        // trade methods
-        void tradeResources(Player *other, Resources resourceIn , Resources resourceOut , size_t inAmount , size_t outAmount);
-        void tradeDevelopmentCards(Player *other , const std::string& cardIn , const std::string&  cardOut);
-
-        //Knight methods
-        void addKnight();
-        void removeKnight();
-
         // Card methods
         void buyDevelopmentCard();
         void useMonopolyCard(Resources giveMeThatResource);
         void useYearOfPlentyCard(Resources resource1, Resources resource2);
         void getBiggestArmyCard();
-        void deleteOwnedCards();
+        void tradeDevelopmentCards(Player *other , const std::string& cardIn , const std::string&  cardOut);
 
         // Resource methods
-        void addResource(Resources resource, size_t amount);
-        void decreaseResource(Resources resource, size_t amount);
-        size_t giveAllResourcesOfType(Resources resource);
+        void tradeResources(Player *other, Resources resourceIn , Resources resourceOut , size_t inAmount , size_t outAmount);
 
         // Getters
         [[nodiscard]] std::string getName() const;
@@ -45,7 +38,7 @@ namespace mycatan {
         std::vector<Player*> getOtherPlayers();
         [[nodiscard]] size_t getWinningPoints() const;
         std::vector<Card*> getOwnedCards() ;
-        size_t getKnightCount() const;
+        [[nodiscard]] size_t getKnightCount() const;
 
         // Setters
         void setTurn(bool state);
@@ -62,16 +55,15 @@ namespace mycatan {
 
         // Private methods
         void handleDiceRoll(size_t diceRoll);
-        void decreaseResourcesAfterAction(const std::string& action);
-        [[nodiscard]] bool hasEnoughResources(const std::string& action) const;
-        Card* getOwnedCard(const std::string& cardType);
 
-        // Helper method for card usage check
-        Card* getUsableCard(const std::string& cardType);
-        void removeCard(Card* cardToRemove );
 
+        DevelopmentCardManagement *devCardManager; // Pointer to DevelopmentCardManagement object
+        ResourceManagement *resourceManager; // Pointer to a Resource manager object
+
+
+        friend class DevelopmentCardManagement; // Allow DevelopmentCardManagement to access private members
+        friend class ResourceManagement; // Allow ResourceManagement to access private members
         friend class TestPlayer; // Allow test class access to private members
-
 
     };
 

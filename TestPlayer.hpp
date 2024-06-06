@@ -18,10 +18,16 @@ namespace mycatan {
         }
 
        
+        static void addResources(Player& player ,Resources resource, size_t amount){
+            player.resourceManager->addResource(resource,amount);
+        }
 
         static size_t getResourceCount(Player& player , Resources resources){
             size_t resourceIndex = resourceToInt(resources);
             return player.resources[resourceIndex];
+        }
+        static void deletePOwnedCards(Player& player){
+            player.devCardManager->deleteOwnedCards();
         }
     };
 

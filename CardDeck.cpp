@@ -2,8 +2,10 @@
 
 using namespace mycatan;
 
-// Initialize the static member
+// Define the static member variables
 std::vector<Card*> CardDeck::cards;
+size_t CardDeck::biggestArmyCardsInDeck = 0; // Initialize to a default value
+bool CardDeck::isInitialized = false; // Initialize to a default value
 
 CardDeck::CardDeck() {
     initializeDeck();
@@ -14,14 +16,9 @@ CardDeck::~CardDeck() {
     cleanUp();
 }
 
-CardDeck& CardDeck::getInstance() {
-    static CardDeck instance; // Guaranteed to be destroyed, instantiated on first use
-    return instance;
-}
-
 void CardDeck::initializeDeck() {
-    if (!cards.empty()) return;  // Avoid reinitializing if already done
-
+    isInitialized = true; // mark the deck as already initiated
+    biggestArmyCardsInDeck = 3;
     // Add Knight cards
     for (int i = 0; i < 14; ++i) {
         cards.push_back(new KnightCard());
@@ -58,7 +55,11 @@ void CardDeck::shuffleDeck() {
 }
 
 Card* CardDeck::drawCard() {
-    if (cards.empty()) {
+
+    if(isInitialized == false) // initiate the deck only once
+        initializeDeck();
+
+    if (cards.empty() && isInitialized ) {
         throw std::runtime_error("Cannot draw a card. The deck is empty.");
     }
 
@@ -71,13 +72,16 @@ size_t CardDeck::getDeckSize() {
     return cards.size();
 }
 
-BiggestArmyCard* CardDeck::getBiggestArmyCard(){
+BiggestArmyCard* CardDeck::getBiggestArmyCard() {
+
+    if(isInitialized == false) // initiate the deck only once
+        initializeDeck();
     // verify that biggest army cards left in the deck 
-    if(BiggestArmyCardsInDeck == 0)
+    if(biggestArmyCardsInDeck == 0)
         throw std::runtime_error("No more biggest army cards in the deck!");
 
     // create a new biggest army card and return to player 
-    BiggestArmyCard* biggestArmyCard = new BiggestArmyCard();
+    auto* biggestArmyCard = new BiggestArmyCard();
     return biggestArmyCard;
 }
 void CardDeck::cleanUp(){

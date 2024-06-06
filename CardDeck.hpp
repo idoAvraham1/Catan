@@ -8,24 +8,22 @@
 namespace mycatan {
     class CardDeck {
     public:
-        /**
-         * @brief Get the singleton instance of the CardDeck.
-         * @return Reference to the singleton instance of CardDeck.
-         */
-        static CardDeck& getInstance();
+        // Delete copy constructor and assignment operator to enforce singleton pattern
+        CardDeck(const CardDeck&) = delete;
+        CardDeck& operator=(const CardDeck&) = delete;
 
         /**
          * @brief Draw a card from the deck.
          * @return Pointer to the drawn card.
          * @throws std::runtime_error if the deck is empty.
          */
-        Card* drawCard();
+        static Card* drawCard();
 
         /**
          * @brief Get the current size of the deck.
          * @return The number of cards remaining in the deck.
          */
-        size_t getDeckSize();
+        static size_t getDeckSize();
 
         /**
          * @brief Destructor for CardDeck.
@@ -33,12 +31,14 @@ namespace mycatan {
          */
         ~CardDeck();
 
-        BiggestArmyCard* getBiggestArmyCard(); 
+        [[nodiscard]] static BiggestArmyCard* getBiggestArmyCard() ;
 
-        void cleanUp(); // Method to free resources
+        static void cleanUp(); // Method to free resources
+
     private:
         static std::vector<Card*> cards;
-        size_t BiggestArmyCardsInDeck = 3;
+        static size_t biggestArmyCardsInDeck;
+        static bool isInitialized;
 
         /**
          * @brief Private constructor for the singleton pattern.
@@ -46,9 +46,6 @@ namespace mycatan {
          */
         CardDeck();
 
-        // Delete copy constructor and assignment operator to enforce singleton pattern
-        CardDeck(const CardDeck&) = delete;
-        CardDeck& operator=(const CardDeck&) = delete;
 
         /**
          * @brief Initialize the deck with the predefined number of cards.

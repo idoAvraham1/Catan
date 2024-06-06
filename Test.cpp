@@ -162,8 +162,8 @@ TEST_CASE("Test cards usage"){
         mycatan::TestPlayer::addCardToPlayer(p1, monopolyCard);
 
         // Simulate resource addition to other players
-        p2.addResource(Resources::Brick, 5);
-        p3.addResource(Resources::Brick, 3);
+        mycatan::TestPlayer::addResources(p2,Resources::Brick, 5);
+        mycatan::TestPlayer::addResources(p3,Resources::Brick, 3);
 
         p1.setTurn(true);
         p1.useMonopolyCard(Resources::Brick);
@@ -212,7 +212,7 @@ TEST_CASE("Test cards usage"){
          CHECK(p1.getWinningPoints() == 2);
 
          // clean up
-         p1.deleteOwnedCards();
+         mycatan::TestPlayer::deletePOwnedCards(p1);
         }
 }
 
@@ -234,21 +234,20 @@ TEST_CASE("Test card Deck ") {
         p1.setTurn(true);
 
         // Ensure the player has enough resources
-        p1.addResource(Resources::Wheat, 1);
-        p1.addResource(Resources::Wood, 1);
-        p1.addResource(Resources::Wool, 1);
-
-        // Get an instance of the card deck  
-        mycatan::CardDeck& deck = mycatan::CardDeck::getInstance();
+        mycatan::TestPlayer::addResources(p1,Resources::Wheat, 1);
+        mycatan::TestPlayer::addResources(p1,Resources::Wood, 1);
+        mycatan::TestPlayer::addResources(p1,Resources::Wool, 1);
 
         // Save the original deck size
-        size_t initialDeckSize = deck.getDeckSize();
+        size_t initialDeckSize = mycatan::CardDeck::getDeckSize();
 
         // Buy a development card
         p1.buyDevelopmentCard();
+        // get the new deck size after p1 bought a card
+        size_t newDeckSize =  mycatan::CardDeck::getDeckSize();
 
         // Ensure the deck size decreases by 1
-        CHECK(deck.getDeckSize() == initialDeckSize - 1);
+        CHECK(newDeckSize == initialDeckSize - 1);
 
         // Verify that the player owns one more card
         CHECK(p1.getOwnedCards().size() == 1);
@@ -263,7 +262,7 @@ TEST_CASE("Test card Deck ") {
         CHECK(ownedCard->getOwner() == p1.getName());
 
         // Cleanup the deck and the drawn card
-        deck.cleanUp();
+        mycatan::CardDeck::cleanUp();
         delete ownedCard;
     }
 
@@ -278,13 +277,13 @@ TEST_CASE("Test card Deck ") {
          * 4. Attempt to draw another card once the deck is empty.
          */
 
-        mycatan::CardDeck& deck = mycatan::CardDeck::getInstance();
-        size_t initialDeckSize = deck.getDeckSize();
+
+        size_t initialDeckSize = mycatan::CardDeck::getDeckSize();
         std::vector<mycatan::Card*> drawnCards;
 
         // Draw all cards
         for (size_t i = 0; i < initialDeckSize; ++i) {
-            mycatan::Card* card = deck.drawCard();
+            mycatan::Card* card = mycatan::CardDeck::drawCard();
             REQUIRE(card != nullptr);
             drawnCards.push_back(card);
         }
@@ -293,12 +292,13 @@ TEST_CASE("Test card Deck ") {
         CHECK(drawnCards.size() == initialDeckSize);
 
         // Verify that the deck is empty
-        CHECK(deck.getDeckSize() == 0);
+        size_t afterAllCardDrawedSize = mycatan::CardDeck::getDeckSize();
+        CHECK( afterAllCardDrawedSize == 0);
 
         // Try to draw another card after the deck is empty and catch the exception
         bool exceptionCaught = false;
         try {
-            deck.drawCard();
+            mycatan::CardDeck::drawCard();
         } catch (const std::runtime_error& e) {
             exceptionCaught = true;
             CHECK(std::string(e.what()) == "Cannot draw a card. The deck is empty.");
@@ -316,11 +316,10 @@ TEST_CASE("Test trade"){
     mycatan::Player p1("ido");
     mycatan::Player p2("shoam");
 
-
     SUBCASE("Test valid resources trade"){
         //Add the players enough resources to trade
-        p1.addResource(Resources::Wheat, 4);
-        p2.addResource(Resources::Wood, 5);
+        mycatan::TestPlayer::addResources(p1,Resources::Wheat, 4);
+        mycatan::TestPlayer::addResources(p2,Resources::Wood, 5);
 
         p1.setTurn(true);
         p1.tradeResources(&p2 , Resources::Wood , Resources::Wheat , 2 , 3 );
@@ -337,7 +336,7 @@ TEST_CASE("Test trade"){
         // Scenario: Player 2 doesn't have enough resources to trade
         CHECK_THROWS(p1.tradeResources(&p2 , Resources::Wood , Resources::Wheat , 2 , 6 ));
         // Scenario: Player 1 wants to trade more resources than they have
-        p1.addResource(Resources::Wheat, 2);
+        mycatan::TestPlayer::addResources(p1,Resources::Wheat, 2);
         CHECK_THROWS(p1.tradeResources(&p2 , Resources::Wheat , Resources::Wood , 3 , 2 ));
     }
 

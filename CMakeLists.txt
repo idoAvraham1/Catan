@@ -19,4 +19,10 @@ add_executable(Catan main.cpp
         TestPlayer.hpp
         TestPlayer.hpp
         CardDeck.cpp
-        CardDeck.hpp)
+        CardDeck.hpp
+        DevelopmentCardManagement.cpp
+        DevelopmentCardManagement.hpp
+        DevelopmentCardManagement.hpp
+        ResourceManagement.cpp
+        ResourceManagement.hpp
+)
