@@ -14,9 +14,11 @@ namespace mycatan {
         void tradeResources(Player *other, Resources resourceIn , Resources resourceOut , size_t inAmount , size_t outAmount);
         void decreaseResourcesAfterAction(const std::string& action);
         [[nodiscard]] bool hasEnoughResources(const std::string& action) const;
+        void decreaseHalfOfAllResource();
 
     private:
         Player* player;
+
     };
 
 }

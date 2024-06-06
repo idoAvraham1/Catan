@@ -32,6 +32,11 @@ namespace mycatan {
 
         // Resource methods
         void tradeResources(Player *other, Resources resourceIn , Resources resourceOut , size_t inAmount , size_t outAmount);
+        void addResource(Resources resource , size_t amount);
+
+        //settlements and road methods
+        void placeSettlement(size_t x, size_t y);
+        void placeRoad(size_t x1 , size_t y2 , size_t x2 , size_t y2);
 
         // Getters
         [[nodiscard]] std::string getName() const;
@@ -52,7 +57,7 @@ namespace mycatan {
         std::vector<Player*> othersPlayers;
         std::vector<Card*> ownedCards;
         std::vector<Edge*> roads;
-        std::vector<Vertex*> settlement;
+        std::vector<Vertex*> settlements;
 
         bool isMyTurn;
         int winning_points;
@@ -69,6 +74,7 @@ namespace mycatan {
         friend class DevelopmentCardManagement; // Allow DevelopmentCardManagement to access private members
         friend class ResourceManagement; // Allow ResourceManagement to access private members
         friend class TestPlayer; // Allow test class access to private members
+
 
     };
 

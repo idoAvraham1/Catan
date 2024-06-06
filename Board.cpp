@@ -78,6 +78,7 @@ void Board::initializeBoard() {
 
 }
 
+
 Vertex* Board::getOrCreateVertex(size_t x, size_t y) {
     auto key = std::make_pair(x, y);
     if (vertices.find(key) == vertices.end()) {
@@ -154,8 +155,8 @@ Edge* Board::getEdge(Vertex* v1, Vertex* v2) {
     return nullptr;
 }
 
-bool Board::canPlaceSettlement(Player* player, Vertex* vertex) {
-    if (vertex->hasSettlement()) {
+bool Board::canPlaceSettlement(Player* player, Vertex* vertex ) {
+    if (vertex == nullptr  || vertex->hasSettlement()) {
         return false; // The vertex is already occupied
     }
 
@@ -168,22 +169,23 @@ bool Board::canPlaceSettlement(Player* player, Vertex* vertex) {
     return false; // No road leads to this vertex
 }
 
+
+
 void Board::allocateResources(size_t diceRoll) {
-    // Iterate through each player's settlements and allocate resources based on dice roll
-    for (const auto& vertexPair : vertices) {
-        Vertex* vertex = vertexPair.second;
-        if (vertex->hasSettlement()) {
-            for (Tile* tile : vertexToTiles[vertex]) {
-                if (tile->getId() == diceRoll) {
-                    // Allocate resources to the player who owns the settlement at this vertex
-                    // Assuming Player class has an addResource method, and we can get the player ID from the vertex
-                    // Player* player = getPlayerById(vertex->getSettlementPlayerId());
-                    // player->addResource(tile->getResourceType());
+    for (Tile* tile : tiles) {
+        if (tile->getId() == diceRoll) {
+            // The tile's number token matches the dice roll
+            for (Vertex* vertex : tile->getVertices()) {
+                if (vertex->hasSettlement()) {
+                    Player* player = vertex->getOwner();
+                    size_t amount = vertex->isCity() ? 2 : 1; // Assume cities produce double resources
+                    player->addResource(tile->getResourceType(), amount);
                 }
             }
         }
     }
 }
+
 
 size_t Board::getVertexCount() const {
     return vertices.size();

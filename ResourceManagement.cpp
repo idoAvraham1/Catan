@@ -17,6 +17,11 @@ namespace mycatan {
         player->resources[resourceIndex] -= amount;
     }
 
+    void ResourceManagement::decreaseHalfOfAllResource(){
+        for (size_t& resource : player->resources) {
+            resource = resource / 2; // Integer division to halve the resources
+        }
+    }
     size_t ResourceManagement::giveAllResourcesOfType(Resources resource) {
         size_t amount = player->resources[resourceToInt(resource)];
         player->resources[resourceToInt(resource)] = 0;

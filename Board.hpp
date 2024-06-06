@@ -36,6 +36,7 @@ namespace mycatan {
         Vertex* getVertex(size_t x, size_t y);
         Edge* getEdge(Vertex* v1, Vertex* v2);
         bool canPlaceSettlement(Player* player, Vertex* vertex);
+        bool canPlaceRoad(Player* player ,Vertex* vertex1 , Vertex* vertex2 );
 
         // Methods to get the count of vertices and edges
         [[nodiscard]] size_t getVertexCount() const;

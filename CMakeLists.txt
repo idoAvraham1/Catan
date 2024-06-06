@@ -33,5 +33,4 @@ add_executable(Catan main.cpp
         Tile.cpp
         Tile.hpp
         Tile.hpp
-        TilesMap.hpp
 )

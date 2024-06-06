@@ -30,11 +30,14 @@ void Player::addOthersPlayers(Player &otherPlayer0, Player &otherPlayer1) {
 
 // Dice methods
 void Player::notifyDiceRoll(size_t diceRoll) {
-    for (Player *otherPlayer: othersPlayers) {
-        if (otherPlayer != nullptr) {
-            otherPlayer->handleDiceRoll(diceRoll);
-        }
+    // decrease half-resources to each player if 7 rolled
+    if(diceRoll == 7){
+        resourceManager->decreaseHalfOfAllResource();
+        for(Player* player : othersPlayers)
+            player->resourceManager->decreaseHalfOfAllResource();
     }
+    Board* board = Board::getInstance();
+    board->allocateResources(diceRoll);
 }
 
 size_t Player::rollDice() {
@@ -49,17 +52,50 @@ size_t Player::rollDice() {
     size_t diceRolled = distr(gen); // Generate random number
     std::cout << name << " rolled: " << diceRolled << std::endl;
 
-    // Notify other players
-    notifyDiceRoll(diceRolled);
-    // Handle the dice roll for this player
-    handleDiceRoll(diceRolled);
+    // Notify the board of the dice roll
+    this->notifyDiceRoll(diceRolled);
 
     return diceRolled;
 }
 
 void Player::handleDiceRoll(size_t diceRoll) {
-    // TODO: Implement logic to handle the dice roll and update player resources
+
 }
+
+// settlements and roads methods
+void Player::placeSettlement(size_t x , size_t y){
+    Board* board = Board::getInstance();
+    Vertex* vertex = board->getVertex(x,y);
+    if ( board->canPlaceSettlement(this,vertex) && resourceManager->hasEnoughResources("settlement")) {
+        vertex->buildSettlement(this);
+        settlements.push_back(vertex); // Add the settlement to the player's settlements
+        resourceManager->decreaseResourcesAfterAction("settlement"); // Deduct resources for placing the settlement
+        std::cout << name << " placed a settlement at (" << x << ", " << y << ")" << std::endl;
+    }
+    else{
+        std::cout << "Cannot place settlement at (" << x << ", " << y << ")" << std::endl;
+    }
+
+
+}
+
+void Player::placeRoad(size_t x1, size_t y1 , size_t x2 , size_t y2) {
+    Board* board = Board::getInstance();
+    Vertex* vertex1 = board->getVertex(x1, y1);
+    Vertex* vertex2 = board->getVertex(x2, y2);
+    Edge* edge = board->getEdge(vertex1, vertex2);
+
+    if (board->canPlaceRoad(this, vertex1, vertex2) && resourceManager->hasEnoughResources("road")) {
+        edge->placeRoad(this);
+        roads.push_back(edge);
+        resourceManager->decreaseResourcesAfterAction("road"); // Deduct resources for placing the road
+        std::cout << name << " placed a road between (" << x1 << ", " << y1 << ") and (" << x2 << ", " << y2 << ")" << std::endl;
+    } else {
+        std::cout << "Cannot place road between (" << x1 << ", " << y1 << ") and (" << x2 << ", " << y2 << ")" << std::endl;
+    }
+}
+}
+
 
 // cards methods
 void Player::buyDevelopmentCard() {
@@ -82,7 +118,9 @@ void Player::getBiggestArmyCard() {
 void Player::tradeResources(Player *other, Resources resourceIn, Resources resourceOut, size_t inAmount, size_t outAmount) {
     resourceManager->tradeResources(other,resourceIn,resourceOut,inAmount,outAmount);
 }
-
+void Player::addResource(Resources resource, size_t amount) {
+    this->resourceManager->addResource(resource , amount);
+}
 // Getters
 std::string Player::getName() const {
     return this->name;
@@ -121,6 +159,9 @@ void Player::setTurn(bool state) {
 void Player::tradeDevelopmentCards(Player *other, const std::string &cardIn, const std::string &cardOut) {
    devCardManager->tradeDevelopmentCards(other,cardIn,cardOut);
 }
+
+
+
 
 
 
