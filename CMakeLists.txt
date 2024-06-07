@@ -17,20 +17,16 @@ add_executable(Catan main.cpp
         DevelopmentCard.cpp
         DevelopmentCard.hpp
         TestPlayer.hpp
-        TestPlayer.hpp
         CardDeck.cpp
         CardDeck.hpp
         DevelopmentCardManagement.cpp
         DevelopmentCardManagement.hpp
-        DevelopmentCardManagement.hpp
-        ResourceManagement.cpp
-        ResourceManagement.hpp
         Edge.cpp
         Edge.hpp
         Vertex.cpp
         Vertex.hpp
-        Vertex.hpp
         Tile.cpp
         Tile.hpp
-        Tile.hpp
+        ResourceManagement.cpp
+        ResourceManagement.hpp
 )

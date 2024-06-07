@@ -7,7 +7,9 @@
 
 
 namespace mycatan {
-
+    class Tile;
+    class Edge;
+    class Vertex;
     // Structure to hold resource type and number token
     struct TileConfig {
         Resources resourceType;

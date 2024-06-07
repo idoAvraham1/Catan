@@ -9,7 +9,7 @@ Player::Player(std::string name)
         isMyTurn(false), knightCount(0) {}
 
 Player::~Player(){
-    DevelopmentCardManagement::deleteOwnedCards(this);
+   // DevelopmentCardManagement::deleteOwnedCards(this);
 }
 // General methods
 void Player::endTurn() {
@@ -73,7 +73,7 @@ void Player::placeSettlement(size_t x , size_t y){
         std::cout << "Cannot place settlement at (" << x << ", " << y << ")" << std::endl;
     }
 }
-
+/*
 void Player::placeRoad(size_t x1, size_t y1 , size_t x2 , size_t y2) {
     Board* board = Board::getInstance();
     Vertex* vertex1 = board->getVertex(x1, y1);
@@ -90,7 +90,7 @@ void Player::placeRoad(size_t x1, size_t y1 , size_t x2 , size_t y2) {
     }
 }
 
-
+*/
 
 // Cards methods
 void Player::buyDevelopmentCard() {

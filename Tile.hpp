@@ -5,6 +5,8 @@
 #include "Vertex.hpp"
 
 namespace mycatan {
+    class Vertex;
+    class Edge;
     class Tile {
     public:
         Tile(size_t id,Resources resourceType, const std::vector<Vertex*>& vertices, const std::vector<Edge*>& edges);

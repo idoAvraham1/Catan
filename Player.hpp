@@ -11,6 +11,9 @@
 
 namespace mycatan {
     class ResourceManagement;
+    class DevelopmentCardManagement;
+    class Edge;
+    class Vertex;
     class Player {
     public:
         // General methods
@@ -37,6 +40,8 @@ namespace mycatan {
         //settlements and road methods
         void placeSettlement(size_t x, size_t y);
         void placeRoad(size_t x1 , size_t y1 , size_t x2 , size_t y2);
+        void PlaceFirstSettlements(size_t x1, size_t y1 , size_t x2, size_t y2);
+        void placeFirstRoads(size_t x1 , size_t y1 , size_t x2 , size_t y2 , size_t x3 , size_t y3 , size_t x4 , size_t y4);
 
         // Getters
         [[nodiscard]] std::string getName() const;
@@ -67,10 +72,9 @@ namespace mycatan {
         void handleDiceRoll(size_t diceRoll);
 
 
-
         friend class ResourceManagement; // Allow ResourceManagement to access private members
         friend class DevelopmentCardManagement; // Allow DevelopmentCardManagement to access private members
-        class TestPlayer; // Allow test class access to private members
+        friend class TestPlayer; // Allow test class access to private members
 
 
     };

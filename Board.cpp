@@ -66,7 +66,7 @@ Board* Board::getInstance() {
 }
 
 void Board::initializeBoard() {
-
+  std::cout<< "Setting up the board"<<std::endl;
   for(const auto& [coordinates , token] : tileConfigurations) {
       size_t x = coordinates.first;
       size_t y = coordinates.second;

@@ -6,6 +6,7 @@
 #include "Vertex.hpp"
 
 namespace mycatan {
+    class Vertex;
     class Edge {
     public:
         Edge(Vertex* v1 , Vertex* v2);

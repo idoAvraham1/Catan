@@ -3,6 +3,8 @@
 
 #include "Player.hpp"
 #include "Catan_API.hpp"
+#include "ResourceManagement.hpp"
+#include "DevelopmentCardManagement.hpp"
 namespace mycatan {
 
     class TestPlayer {
@@ -19,7 +21,7 @@ namespace mycatan {
 
        
         static void addResources(Player& player ,Resources resource, size_t amount){
-            player.resourceManager->addResource(resource,amount);
+            ResourceManagement::addResource(&player,resource,amount);
         }
 
         static size_t getResourceCount(Player& player , Resources resources){
@@ -27,7 +29,7 @@ namespace mycatan {
             return player.resources[resourceIndex];
         }
         static void deletePOwnedCards(Player& player){
-            player.devCardManager->deleteOwnedCards();
+            DevelopmentCardManagement::deleteOwnedCards(&player);
         }
     };
 

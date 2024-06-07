@@ -398,7 +398,6 @@ TEST_CASE("Test Board") {
 
             // Check if the tile was found
             REQUIRE((tile != nullptr));
-
             // Check the tile's resource type and number token
             CHECK((tile->getResourceType() == config.resourceType));
             CHECK((tile->getId() == config.numberToken));
