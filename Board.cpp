@@ -1,5 +1,4 @@
 #include "Board.hpp"
-#include "TilesMap.hpp"
 using namespace mycatan;
 
 // Initialize static member
@@ -10,27 +9,27 @@ std::map<std::pair<size_t, size_t>, TileConfig> Board::tileConfigurations = {
         // first row
         {{0, 4}, {Resources::Brick, 5}},
         {{1, 4}, {Resources::Wheat, 6}},
-        {{2, 4}, {Resources::Ore, 11}},
+        {{2, 4}, {Resources::Wool, 11}},
         // second row
-        {{0, 3}, {Resources::Ore, 8}},
-        {{1, 3}, {Resources::Wood, 3}},
-        {{2, 3}, {Resources::Wool, 4}},
-        {{3, 3}, {Resources::Brick, 7}},
+        {{0, 3}, {Resources::Wood, 8}},
+        {{1, 3}, {Resources::Ore, 3}},
+        {{2, 3}, {Resources::Wheat, 4}},
+        {{3, 3}, {Resources::Wool, 7}},
         // third row
-        {{0, 2}, {Resources::Wood, 9}},
-        {{1, 2}, {Resources::Wheat, 11}},
+        {{0, 2}, {Resources::Wheat, 9}},
+        {{1, 2}, {Resources::Wood, 11}},
         {{2, 2}, {Resources::Desert, 7}},
-        {{3, 2}, {Resources::Ore, 3}},
-        {{4, 2}, {Resources::Wool, 8}},
+        {{3, 2}, {Resources::Wood, 3}},
+        {{4, 2}, {Resources::Ore, 8}},
         // fourth row
         {{1, 1}, {Resources::Wheat, 12}},
-        {{2, 1}, {Resources::Wood, 6}},
-        {{3, 1}, {Resources::Ore, 4}},
-        {{4, 1}, {Resources::Wool, 10}},
+        {{2, 1}, {Resources::Brick, 6}},
+        {{3, 1}, {Resources::Wool, 4}},
+        {{4, 1}, {Resources::Brick, 10}},
         // fifth row
-        {{2, 0}, {Resources::Brick, 10}},
+        {{2, 0}, {Resources::Ore, 10}},
         {{3, 0}, {Resources::Wool, 2}},
-        {{4, 0}, {Resources::Wheat, 9}},
+        {{4, 0}, {Resources::Wood, 9}},
 };
 
 // Private constructor
@@ -68,9 +67,9 @@ Board* Board::getInstance() {
 
 void Board::initializeBoard() {
 
-  for(const auto& [cordinates , token] : tileConfigurations) {
-      size_t x = cordinates.first;
-      size_t y = cordinates.second;
+  for(const auto& [coordinates , token] : tileConfigurations) {
+      size_t x = coordinates.first;
+      size_t y = coordinates.second;
       Resources resource = token.resourceType;
       size_t id = token.numberToken;
       createTile(x, y, id, resource);
@@ -178,7 +177,7 @@ void Board::allocateResources(size_t diceRoll) {
             for (Vertex* vertex : tile->getVertices()) {
                 if (vertex->hasSettlement()) {
                     Player* player = vertex->getOwner();
-                    size_t amount = vertex->isCity() ? 2 : 1; // Assume cities produce double resources
+                    size_t amount = vertex->isCity() ? 2 : 1; // cities produce double resources
                     player->addResource(tile->getResourceType(), amount);
                 }
             }
