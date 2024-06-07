@@ -1,27 +1,22 @@
-
 #ifndef CATAN_RESOURCEMANAGEMENT_HPP
 #define CATAN_RESOURCEMANAGEMENT_HPP
+
 #include "Catan_API.hpp"
 #include "Player.hpp"
 
 namespace mycatan {
     class ResourceManagement {
     public:
-        explicit ResourceManagement(Player* player);
-        void addResource(Resources resource , size_t amount);
-        void decreaseResource(Resources resource, size_t amount);
-        size_t giveAllResourcesOfType(Resources resource);
-        void tradeResources(Player *other, Resources resourceIn , Resources resourceOut , size_t inAmount , size_t outAmount);
-        void decreaseResourcesAfterAction(const std::string& action);
-        [[nodiscard]] bool hasEnoughResources(const std::string& action) const;
-        void decreaseHalfOfAllResource();
 
-    private:
-        Player* player;
+        static void addResource(Player* player,Resources resource , size_t amount);
+        static void decreaseResource(Player* player , Resources resource, size_t amount);
+        static size_t giveAllResourcesOfType(Player* player , Resources resource);
+        static void tradeResources(Player* thisPlayer,Player *otherPlayer, Resources resourceIn , Resources resourceOut , size_t inAmount , size_t outAmount);
+        static void decreaseResourcesAfterAction(Player* player,const std::string& action);
+        static bool hasEnoughResources(const Player* player ,const std::string& action) ;
+        static void decreaseHalfOfAllResource(Player* player);
 
     };
-
 }
-
 
 #endif //CATAN_RESOURCEMANAGEMENT_HPP
