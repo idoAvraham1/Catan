@@ -58,7 +58,7 @@ namespace mycatan {
         static std::unordered_map<std::string, std::vector<size_t>> resourceRequirements = {
                 {"settlement", {1, 1, 1, 1, 0}},       // 1 Brick, 1 Wheat, 1 Wool, 1 Wood
                 {"road", {1, 0, 1, 0, 0}},             // 1 Brick, 1 Wood
-                {"city", {0, 2, 3, 0, 0}},             // 2 Wheat, 3 Ore
+                {"city", {0, 2, 0, 0, 3}},             // 2 Wheat, 3 Ore
                 {"developmentCard", {0, 1, 1, 0, 1}}   // 1 Wheat, 1 Wool, 1 Ore
         };
 
@@ -74,7 +74,7 @@ namespace mycatan {
         static std::unordered_map<std::string, std::vector<size_t>> resourceRequirements = {
                 {"settlement",      {1, 1, 1, 1, 0}},       // 1 Brick, 1 Wheat, 1 Wool, 1 Wood
                 {"road",            {1, 0, 1, 0, 0}},             // 1 Brick, 1 Wood
-                {"city",            {0, 2, 3, 0, 0}},             // 2 Wheat, 3 Ore
+                {"city",            {0, 2, 0, 0, 3}},             // Wheat 2, 3 Ore
                 {"developmentCard", {0, 1, 1, 0, 1}}   // 1 Wheat, 1 Wool, 1 Ore
         };
 

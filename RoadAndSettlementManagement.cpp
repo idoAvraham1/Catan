@@ -2,13 +2,16 @@
 #include "ResourceManagement.hpp"
 
 namespace mycatan {
+
     void RoadAndSettlementManagement::placeSettlement(Player* player, size_t x, size_t y) {
         Board* board = Board::getInstance();
         Vertex* vertex = board->getVertex(x, y);
-        if (canPlaceSettlement(player, vertex) && ResourceManagement::hasEnoughResources(player, "settlement")) {
+        if (board->canPlaceSettlement(player, vertex) && ResourceManagement::hasEnoughResources(player, "settlement")) {
             vertex->buildSettlement(player);
             player->settlements.push_back(vertex);
             ResourceManagement::decreaseResourcesAfterAction(player, "settlement");
+            player->winning_points++;
+            allocateResourcesForSettlement(player,vertex);
             std::cout << player->getName() << " placed a settlement at (" << x << ", " << y << ")" << std::endl;
         } else {
             std::cout << "Cannot place settlement at (" << x << ", " << y << ")" << std::endl;
@@ -16,36 +19,89 @@ namespace mycatan {
     }
 
     void RoadAndSettlementManagement::placeRoad(Player* player, size_t x1, size_t y1, size_t x2, size_t y2) {
+
         Board* board = Board::getInstance();
         Vertex* vertex1 = board->getVertex(x1, y1);
         Vertex* vertex2 = board->getVertex(x2, y2);
         Edge* edge = board->getEdge(vertex1, vertex2);
 
-        if (canPlaceRoad(player, vertex1, vertex2) && ResourceManagement::hasEnoughResources(player, "road")) {
+        // verify that the player has enough resources for building road, and that the desired road is valid
+        if (board->canPlaceRoad(player, vertex1, vertex2) && ResourceManagement::hasEnoughResources(player, "road")) {
             edge->placeRoad(player);
             player->roads.push_back(edge);
             ResourceManagement::decreaseResourcesAfterAction(player, "road");
+            std::cout << player->getName() << " placed a road between (" << x1 << ", " << y1 << ") and (" << x2 << ", " << y2 << ")" << std::endl;
+        }
+        else { // road placement isn't valid
+            std::cout << "Cannot place road between (" << x1 << ", " << y1 << ") and (" << x2 << ", " << y2 << ")" << std::endl;
+        }
+    }
+
+    void RoadAndSettlementManagement::placeFirstSettlement(Player* player, size_t x, size_t y) {
+        // first time trying to place the first settlement
+        if(player->placedFirstSettlements)
+            throw std::runtime_error("Already placed you first settlements!");
+
+        Board* board = Board::getInstance();
+        Vertex* vertex = board->getVertex(x, y);
+        if (vertex && !vertex->hasSettlement()) {
+            vertex->buildSettlement(player);
+            player->settlements.push_back(vertex);
+            player->winning_points++;
+            allocateResourcesForSettlement(player,vertex);
+            std::cout << player->getName() << " placed the first settlement at (" << x << ", " << y << ")" << std::endl;
+        } else {
+            std::cout << "Cannot place the first settlement at (" << x << ", " << y << ")" << std::endl;
+        }
+    }
+
+    void RoadAndSettlementManagement::placeFirstRoad(Player* player, size_t x1, size_t y1, size_t x2, size_t y2) {
+
+        if(player->placedFirstRoads)  //first time trying to place the first roads
+            throw std::runtime_error("Already placed your first Roads!");
+
+        Board* board = Board::getInstance();
+        Vertex* vertex1 = board->getVertex(x1, y1);
+        Vertex* vertex2 = board->getVertex(x2, y2);
+        Edge* edge = board->getEdge(vertex1, vertex2);
+
+        if (vertex1 && vertex2 && edge && !edge->hasRoad()) {
+            edge->placeRoad(player);
+            player->roads.push_back(edge);
             std::cout << player->getName() << " placed a road between (" << x1 << ", " << y1 << ") and (" << x2 << ", " << y2 << ")" << std::endl;
         } else {
             std::cout << "Cannot place road between (" << x1 << ", " << y1 << ") and (" << x2 << ", " << y2 << ")" << std::endl;
         }
     }
 
-    bool RoadAndSettlementManagement::canPlaceSettlement(Player* player, Vertex* vertex) {
-        if (vertex == nullptr || vertex->hasSettlement()) {
-            return false; // The vertex is already occupied
+    void RoadAndSettlementManagement::allocateResourcesForSettlement(Player* player, Vertex* vertex) {
+        Board* board = Board::getInstance();
+        std::vector<Tile*> adjacentTiles = board->getAdjacentTiles(vertex);
+        for (Tile* tile : adjacentTiles) {
+            ResourceManagement::addResource(player, tile->getResourceType(), 1);
+            std::cout << player->getName() << " collected 1 unit of " << resourceToString(tile->getResourceType()) << std::endl;
         }
-        // Additional checks if needed
-        return true;
     }
 
-    bool RoadAndSettlementManagement::canPlaceRoad(Player* player, Vertex* vertex1, Vertex* vertex2) {
+    void RoadAndSettlementManagement::upgradeToCity(Player* player ,size_t x, size_t y) {
+
+        // Verify that the player has enough resources and a settlement in the given vertex
         Board* board = Board::getInstance();
-        Edge* edge = board->getEdge(vertex1, vertex2);
-        if (edge == nullptr || edge->hasRoad()) {
-            return false; // The edge already has a road
+        Vertex* toUpgrade = board->getVertex(x, y);
+
+        if (toUpgrade && toUpgrade->getOwner() == player && !toUpgrade->isCity() && ResourceManagement::hasEnoughResources(player, "city")) {
+            std::cout << player->getName() << " upgraded a settlement to a city at (" << x << ", " << y << ")" << std::endl;
+            // Upgrade the settlement to a city
+            toUpgrade->upgradeToCity();
+            player->winning_points++; // Player gains one more point for the city
+
+            // Decrease resources for upgrading to a city
+            ResourceManagement::decreaseResourcesAfterAction(player, "city");
         }
-        // Additional checks if needed
-        return true;
+        else {
+               throw std::runtime_error ("Cannot upgrade settlement to a city");
+        }
+
     }
-}
+
+} // namespace mycatan

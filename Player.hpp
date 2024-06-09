@@ -44,6 +44,7 @@ namespace mycatan {
         void placeRoad(size_t x1 , size_t y1 , size_t x2 , size_t y2);
         void PlaceFirstSettlements(size_t x1, size_t y1 , size_t x2, size_t y2);
         void placeFirstRoads(size_t x1 , size_t y1 , size_t x2 , size_t y2 , size_t x3 , size_t y3 , size_t x4 , size_t y4);
+        void upgradeToCity(size_t x , size_t y);
 
         // Getters
         [[nodiscard]] std::string getName() const;
@@ -70,20 +71,15 @@ namespace mycatan {
         bool isMyTurn;
         int winning_points;
         size_t knightCount;
+        bool placedFirstSettlements;
+        bool placedFirstRoads;
 
-        // Private methods
-        void handleDiceRoll(size_t diceRoll);
-
-        //// Allow Management classes  to access private members
+        // Allow Management classes  to access private members
         friend class ResourceManagement;
         friend class DevelopmentCardManagement;
         friend class RoadAndSettlementManagement;
         friend class TestPlayer; // Allow test class access to private members
 
-
-        void placeRoadWithoutCheck(size_t x1, size_t y1, size_t x2, size_t y2);
-
-        void allocateResourcesForSettlement(Vertex *vertex);
     };
 
 } // namespace mycatan

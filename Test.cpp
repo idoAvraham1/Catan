@@ -85,12 +85,16 @@ TEST_CASE("Turns logic ") {
 }
 
 TEST_CASE("Dice logic"){
+    // init steps
     // create 3 players
     Player p1("ido");
     Player p2("shoam");
     Player p3("shlomi");
 
+    // start the game and get board instance
     Catan catan(p1, p2, p3);
+    catan.chooseStartingPlayer();
+    Board* board = Board::getInstance();
 
     SUBCASE("Rolled dice result  is within valid range") {
         size_t startingPlayerIndex = catan.chooseStartingPlayer();
@@ -100,6 +104,74 @@ TEST_CASE("Dice logic"){
         CHECK(( 2 <= res && res <= 12 ));
     }
 
+    SUBCASE("Test 7 rolled in the dice"){
+        // add resources to all the players
+        p1.addResource(Resources::Wheat , 6);
+        p1.addResource(Resources::Wool , 6);
+        p2.addResource(Resources::Brick , 6);
+        p2.addResource(Resources::Wool , 6);
+        p3.addResource(Resources::Wood , 6);
+        p3.addResource(Resources::Ore, 6);
+
+        // set p1 true, roll the dice until the outcome is 7
+        p1.setTurn(true);
+        bool notSeven = true;
+        while(notSeven){
+            size_t res = p1.rollDice();
+            if ( res == 7)
+                notSeven = false;
+        }
+
+        // Verify that each player decreased half of their resources
+        CHECK((TestPlayer::getResourceCount(p1, Resources::Wheat) == 3));
+        CHECK((TestPlayer::getResourceCount(p1, Resources::Wool) == 3));
+        CHECK((TestPlayer::getResourceCount(p2, Resources::Brick) == 3));
+        CHECK((TestPlayer::getResourceCount(p2, Resources::Wool) == 3));
+        CHECK((TestPlayer::getResourceCount(p3, Resources::Wood) == 3));
+        CHECK((TestPlayer::getResourceCount(p3, Resources::Ore) == 3));
+
+    }
+
+    SUBCASE("Test resources allocation according to the dice rolled"){
+        // Place initial settlements and roads for setup
+        p1.setTurn(true);
+        p1.PlaceFirstSettlements(2, 0, 3, 0); // Tile (2,0)- Resource: ore, numToken: 10
+
+        p2.setTurn(true);
+        p2.PlaceFirstSettlements(2, 5 , 3 , 5); // Tile (0,4) - Resource: brick, numToken: 5
+
+        p3.setTurn(true);
+        p3.PlaceFirstSettlements(8, 2, 9, 1); //Tile (4,1) - Resource :brick, numToken: 10
+
+        // Upgrade a settlement of p1 to a city
+        p1.addResource(Resources::Wheat, 2);
+        p1.addResource(Resources::Ore, 3);
+        p1.upgradeToCity(2,0);
+
+        // Manually set a dice roll that matches the resource allocation for a specific tile
+        size_t diceRollForOre = 10;
+        size_t diceRollForBrick = 5;
+
+        // Roll the dice for wheat production
+        p2.setTurn(true);
+        p2.notifyDiceRoll(diceRollForOre);
+
+        // Verify resource allocation for wood, wool; p1 should receive double wood
+        // 2 units of Ore from the city, 1 from the settlement , 2 from initial placings
+        CHECK((TestPlayer::getResourceCount(p1, Resources::Ore) == 5));
+
+        p1.setTurn(true);
+        // Roll the dice for brick production
+        p1.notifyDiceRoll(diceRollForBrick);
+
+        // Verify resource allocation for brick p3 received from the settlement at (8,2)
+        // 1 unit of brick from each settlement, 2 from inital placings
+        CHECK((TestPlayer::getResourceCount(p2, Resources::Brick) == 4));
+
+    }
+
+
+    board->cleanBoard();
 }
 
 TEST_CASE("Test cards usage"){
@@ -634,5 +706,42 @@ TEST_CASE("Test Place Regular Settlements and Roads") {
     }
 
     // Cleanup the board after tests
+    board->cleanBoard();
+}
+
+TEST_CASE("Test upgrade settlement to a city "){
+    // Initial setup
+    // Create 3 players
+    Player p1("ido");
+    Player p2("shoam");
+    Player p3("shlomi");
+
+    // Initialize the game and board
+    Catan catan(p1, p2, p3);
+    Board* board = Board::getInstance();
+
+    // Place initial settlements and roads for setup
+    p1.setTurn(true);
+    p1.PlaceFirstSettlements(6, 1, 8, 0);
+    p1.placeFirstRoads(6, 1, 6, 0, 8, 0, 7, 0);
+
+    SUBCASE("valid settlement upgrade"){
+         // give p1 enough resources to upgrade the settlement into a city
+         p1.addResource(Resources::Wheat , 2);
+         p1.addResource(Resources::Ore ,3 );
+
+         // try to upgrade the settlement at 6,1 into a city
+         p1.upgradeToCity(6,1);
+         // verify that p1 is the owner of the city, and that the vertex is now a city
+         Vertex* newCity = board->getVertex(6,1);
+         CHECK(newCity->isCity());
+         CHECK( (newCity->getOwner() == &p1) );
+    }
+    SUBCASE("invalid settlement upgrade"){
+        // try to upgrade the settlement at 6,1 into a city without enough resources
+        CHECK_THROWS( p1.upgradeToCity(6,1)) ;
+    }
+
+    // clean up
     board->cleanBoard();
 }
