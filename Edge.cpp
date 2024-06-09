@@ -21,3 +21,11 @@ void Edge::placeRoad( Player* newOwner) {
     owner = newOwner;
 }
 
+Player* Edge::getOwner() const {
+    return owner;
+}
+
+bool Edge::isContainVertex(Vertex* vertex){
+    return v1 == vertex || v2 == vertex;
+}
+

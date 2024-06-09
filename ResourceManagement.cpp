@@ -3,12 +3,15 @@
 
 namespace mycatan {
 
-    void ResourceManagement::addResource(Player* player, Resources resource, size_t amount) {
+    void ResourceManagement::addResource(Player *player, Resources resource, size_t amount) {
+        if (resource == Resources::Desert)
+            return; // avoid adding resources if the resource is desert
+
         size_t resourceIndex = resourceToInt(resource);
         player->resources[resourceIndex] += amount;
     }
 
-    void ResourceManagement::decreaseResource(Player* player, Resources resource, size_t amount) {
+    void ResourceManagement::decreaseResource(Player *player, Resources resource, size_t amount) {
         size_t resourceIndex = resourceToInt(resource);
         if (player->resources[resourceIndex] < amount) {
             throw std::runtime_error("Not enough resources!");
@@ -16,19 +19,20 @@ namespace mycatan {
         player->resources[resourceIndex] -= amount;
     }
 
-    void ResourceManagement::decreaseHalfOfAllResource(Player* player) {
-        for (size_t& resource : player->resources) {
+    void ResourceManagement::decreaseHalfOfAllResource(Player *player) {
+        for (size_t &resource: player->resources) {
             resource = resource / 2; // Integer division to halve the resources
         }
     }
 
-    size_t ResourceManagement::giveAllResourcesOfType(Player* player, Resources resource) {
+    size_t ResourceManagement::giveAllResourcesOfType(Player *player, Resources resource) {
         size_t amount = player->resources[resourceToInt(resource)];
         player->resources[resourceToInt(resource)] = 0;
         return amount;
     }
 
-    void ResourceManagement::tradeResources(Player* thisPlayer, Player* otherPlayer, Resources resourceIn, Resources resourceOut, size_t inAmount, size_t outAmount) {
+    void ResourceManagement::tradeResources(Player *thisPlayer, Player *otherPlayer, Resources resourceIn,
+                                            Resources resourceOut, size_t inAmount, size_t outAmount) {
         if (!thisPlayer->isMyTurn) {
             throw std::runtime_error("It's not your turn!");
         }
@@ -46,37 +50,40 @@ namespace mycatan {
         addResource(otherPlayer, resourceOut, outAmount);
 
         std::cout << thisPlayer->name << " traded " << outAmount << " units of " << resourceToString(resourceOut)
-                  << " with " << otherPlayer->name << " for " << inAmount << " units of " << resourceToString(resourceIn) << std::endl;
+                  << " with " << otherPlayer->name << " for " << inAmount << " units of "
+                  << resourceToString(resourceIn) << std::endl;
     }
 
-    void ResourceManagement::decreaseResourcesAfterAction(Player* player, const std::string& action) {
+    void ResourceManagement::decreaseResourcesAfterAction(Player *player, const std::string &action) {
         static std::unordered_map<std::string, std::vector<size_t>> resourceRequirements = {
-                {"settlement", {1, 1, 1, 1}},
-                {"road", {1, 1, 0, 0}},
-                {"city", {0, 2, 3, 0}},
-                {"developmentCard", {0, 1, 1, 1}}
+                {"settlement", {1, 1, 1, 1, 0}},       // 1 Brick, 1 Wheat, 1 Wool, 1 Wood
+                {"road", {1, 0, 1, 0, 0}},             // 1 Brick, 1 Wood
+                {"city", {0, 2, 3, 0, 0}},             // 2 Wheat, 3 Ore
+                {"developmentCard", {0, 1, 1, 0, 1}}   // 1 Wheat, 1 Wool, 1 Ore
         };
 
         const auto& requirements = resourceRequirements[action];
-        player->resources[WOOD] -= requirements[WOOD];
         player->resources[BRICK] -= requirements[BRICK];
         player->resources[WHEAT] -= requirements[WHEAT];
         player->resources[WOOL] -= requirements[WOOL];
+        player->resources[WOOD] -= requirements[WOOD];
+        player->resources[ORE] -= requirements[ORE];
     }
 
-    bool ResourceManagement::hasEnoughResources(const Player* player, const std::string& action) {
+    bool ResourceManagement::hasEnoughResources(const Player *player, const std::string &action) {
         static std::unordered_map<std::string, std::vector<size_t>> resourceRequirements = {
-                {"settlement", {1, 1, 1, 1}},
-                {"road", {1, 1, 0, 0}},
-                {"city", {0, 2, 3, 0}},
-                {"developmentCard", {0, 1, 1, 1}}
+                {"settlement",      {1, 1, 1, 1, 0}},       // 1 Brick, 1 Wheat, 1 Wool, 1 Wood
+                {"road",            {1, 0, 1, 0, 0}},             // 1 Brick, 1 Wood
+                {"city",            {0, 2, 3, 0, 0}},             // 2 Wheat, 3 Ore
+                {"developmentCard", {0, 1, 1, 0, 1}}   // 1 Wheat, 1 Wool, 1 Ore
         };
 
-        const auto& requirements = resourceRequirements[action];
-        return player->resources[WOOD] >= requirements[WOOD] &&
-               player->resources[BRICK] >= requirements[BRICK] &&
+        const auto &requirements = resourceRequirements[action];
+        return player->resources[BRICK] >= requirements[BRICK] &&
                player->resources[WHEAT] >= requirements[WHEAT] &&
-               player->resources[WOOL] >= requirements[WOOL];
-    }
+               player->resources[WOOL] >= requirements[WOOL] &&
+               player->resources[WOOD] >= requirements[WOOD] &&
+               player->resources[ORE] >= requirements[ORE];
 
+    }
 }

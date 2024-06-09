@@ -8,9 +8,8 @@ Player::Player(std::string name)
         othersPlayers(2, nullptr),winning_points(0),
         isMyTurn(false), knightCount(0) {}
 
-Player::~Player(){
-   // DevelopmentCardManagement::deleteOwnedCards(this);
-}
+Player::~Player() = default;
+
 // General methods
 void Player::endTurn() {
     isMyTurn = false;
@@ -73,8 +72,59 @@ void Player::placeSettlement(size_t x , size_t y){
         std::cout << "Cannot place settlement at (" << x << ", " << y << ")" << std::endl;
     }
 }
-/*
-void Player::placeRoad(size_t x1, size_t y1 , size_t x2 , size_t y2) {
+void Player::PlaceFirstSettlements(size_t x1, size_t y1, size_t x2, size_t y2) {
+    Board* board = Board::getInstance();
+
+    // Place the first settlement without a resource and road checks
+    Vertex* vertex1 = board->getVertex(x1, y1);
+    if (vertex1 && !vertex1->hasSettlement()) {
+        vertex1->buildSettlement(this);
+        settlements.push_back(vertex1);
+        std::cout << name << " placed the first settlement at (" << x1 << ", " << y1 << ")" << std::endl;
+        winning_points++;
+        // Allocate resources based on the first settlement location
+        allocateResourcesForSettlement(vertex1);
+    } else {
+        std::cout << "Cannot place the first settlement at (" << x1 << ", " << y1 << ")" << std::endl;
+    }
+
+    // Place the second settlement without a resource and road checks
+    Vertex* vertex2 = board->getVertex(x2, y2);
+    if (vertex2 && !vertex2->hasSettlement()) {
+        vertex2->buildSettlement(this);
+         settlements.push_back(vertex2);
+         std::cout << name << " placed the second settlement at (" << x2 << ", " << y2 << ")" << std::endl;
+         winning_points ++;
+        // Allocate resources based on the second settlement location
+        allocateResourcesForSettlement(vertex2);
+    } else {
+        std::cout << "Cannot place the second settlement at (" << x2 << ", " << y2 << ")" << std::endl;
+    }
+}
+
+void Player::placeFirstRoads(size_t x1, size_t y1, size_t x2, size_t y2, size_t x3, size_t y3, size_t x4, size_t y4) {
+    placeRoadWithoutCheck(x1, y1, x2, y2);
+    placeRoadWithoutCheck(x3, y3, x4, y4);
+}
+
+void Player::placeRoadWithoutCheck(size_t x1, size_t y1, size_t x2, size_t y2) {
+    Board* board = Board::getInstance();
+    Vertex* vertex1 = board->getVertex(x1, y1);
+    Vertex* vertex2 = board->getVertex(x2, y2);
+    Edge* edge = board->getEdge(vertex1, vertex2);
+
+    if (vertex1 && vertex2 && edge && !edge->hasRoad()) {
+        edge->placeRoad(this);
+        roads.push_back(edge);
+        std::cout << name << " placed a road between (" << x1 << ", " << y1 << ") and (" << x2 << ", " << y2 << ")" << std::endl;
+    }
+    else {
+        std::cout << "Cannot place road between (" << x1 << ", " << y1 << ") and (" << x2 << ", " << y2 << ")" << std::endl;
+    }
+}
+
+
+void Player::placeRoad(size_t x1, size_t y1, size_t x2, size_t y2) {
     Board* board = Board::getInstance();
     Vertex* vertex1 = board->getVertex(x1, y1);
     Vertex* vertex2 = board->getVertex(x2, y2);
@@ -85,12 +135,13 @@ void Player::placeRoad(size_t x1, size_t y1 , size_t x2 , size_t y2) {
         roads.push_back(edge);
         ResourceManagement::decreaseResourcesAfterAction(this, "road"); // Deduct resources for placing the road
         std::cout << name << " placed a road between (" << x1 << ", " << y1 << ") and (" << x2 << ", " << y2 << ")" << std::endl;
-    } else {
+    }
+    else {
         std::cout << "Cannot place road between (" << x1 << ", " << y1 << ") and (" << x2 << ", " << y2 << ")" << std::endl;
     }
 }
 
-*/
+
 
 // Cards methods
 void Player::buyDevelopmentCard() {
@@ -121,6 +172,15 @@ void Player::tradeResources(Player *other, Resources resourceIn, Resources resou
 void Player::addResource(Resources resource, size_t amount) {
     ResourceManagement::addResource(this, resource, amount);
 }
+void Player::allocateResourcesForSettlement(Vertex* vertex) {
+     Board* board = Board::getInstance();
+    std::vector<Tile*> adjacentTiles = board->getAdjacentTiles(vertex);
+    for (Tile* tile : adjacentTiles) {
+        ResourceManagement::addResource(this, tile->getResourceType(), 1);
+        std::cout << name << " collected 1 unit of " << resourceToString(tile->getResourceType()) << std::endl;
+    }
+}
+
 // Getters
 std::string Player::getName() const {
     return this->name;
@@ -154,6 +214,12 @@ size_t Player::getKnightCount() const {
 void Player::setTurn(bool state) {
     isMyTurn = state;
 }
+
+std::vector<Vertex *> Player::getSettlements() const {
+     return settlements;
+}
+
+
 
 
 

@@ -11,7 +11,6 @@
 #include "Board.hpp"
 #include "Tile.hpp"
 
-
 using namespace mycatan;
 using namespace std;
 
@@ -238,8 +237,8 @@ TEST_CASE("Test card Deck ") {
         p1.setTurn(true);
 
         // Ensure the player has enough resources
+        TestPlayer::addResources(p1,Resources::Ore, 1);
         TestPlayer::addResources(p1,Resources::Wheat, 1);
-        TestPlayer::addResources(p1,Resources::Wood, 1);
         TestPlayer::addResources(p1,Resources::Wool, 1);
 
         // Save the original deck size
@@ -258,7 +257,7 @@ TEST_CASE("Test card Deck ") {
 
         // Verify the player's resources are decremented correctly
         CHECK( (TestPlayer::getResourceCount(p1, Resources::Wheat) == 0) );
-        CHECK( (TestPlayer::getResourceCount(p1, Resources::Wood) == 0) );
+        CHECK( (TestPlayer::getResourceCount(p1, Resources::Ore) == 0) );
         CHECK( (TestPlayer::getResourceCount(p1, Resources::Wool) == 0) );
 
         // Verify the card's owner is set correctly
@@ -437,6 +436,7 @@ TEST_CASE("Test Board") {
                 CHECK(found);
             }
         }
+
     }
 
     SUBCASE("Test board edges initialization") {
@@ -486,6 +486,153 @@ TEST_CASE("Test Board") {
             }
         }
     }
+
+    board->cleanBoard();
 }
 
+TEST_CASE("Test Place first Road and Settlement") {
+    // Initial setup
+    // Create 3 players
+    Player p1("ido");
+    Player p2("shoam");
+    Player p3("shlomi");
 
+    // Initialize the board
+    Board* board = Board::getInstance();
+
+    WHEN("Placing the first settlements") {
+        p1.setTurn(true);
+        p1.PlaceFirstSettlements(6, 1, 8, 0);
+
+        Vertex* p1_FirstSettlement = board->getVertex(8, 0);
+        Vertex* p1_SecondSettlement = board->getVertex(6, 1);
+
+        THEN("The settlements should be correctly placed") {
+            CHECK((p1_FirstSettlement->getOwner() == &p1));
+            CHECK((p1_SecondSettlement->getOwner() == &p1));
+            // Another player can't place settlement in the same spot
+            CHECK(!board->canPlaceSettlement(&p2, p1_FirstSettlement));
+            CHECK(!board->canPlaceSettlement(&p2, p1_SecondSettlement));
+
+            AND_THEN("Placing the first roads should work correctly") {
+                // Place two first Roads
+                p1.placeFirstRoads(6, 1, 6, 0, 8, 0, 7, 0);
+
+                Vertex* firstRoadSecondVertex = board->getVertex(7, 0);
+                Vertex* secondRoadSecondVertex = board->getVertex(6, 0);
+
+                Edge* p1_FirstRoad = board->getEdge(p1_FirstSettlement, firstRoadSecondVertex);
+                Edge* p1_SecondRoad = board->getEdge(p1_SecondSettlement, secondRoadSecondVertex);
+
+                CHECK((p1_FirstRoad->getOwner() == &p1));
+                CHECK((p1_SecondRoad->getOwner() == &p1));
+
+                CHECK(!board->canPlaceRoad(&p2, p1_FirstSettlement, firstRoadSecondVertex));
+                CHECK(!board->canPlaceRoad(&p2, p1_SecondSettlement, secondRoadSecondVertex));
+
+                AND_THEN("p1 should have received the required amount of each resource and correct winning points") {
+                    // Get each settlement's associated Tiles
+                    std::vector<Tile*> firstSettlementTiles = board->getAdjacentTiles(p1_FirstSettlement);
+                    std::vector<Tile*> secondSettlementTiles = board->getAdjacentTiles(p1_SecondSettlement);
+
+                    // Check that p1 has the right amount of resources
+                    std::vector<size_t> resourcesRequiredCount(5, 0);
+                    for (Tile* tile : firstSettlementTiles) {
+                        size_t resourceIndex = resourceToInt(tile->getResourceType());
+                        resourcesRequiredCount[resourceIndex]++;
+                    }
+                    for (Tile* tile : secondSettlementTiles) {
+                        size_t resourceIndex = resourceToInt(tile->getResourceType());
+                        resourcesRequiredCount[resourceIndex]++;
+                    }
+
+                    // Verify that p1 received the required amount of each resource
+                    size_t actualBrickAmount = TestPlayer::getResourceCount(p1, Resources::Brick);
+                    CHECK((actualBrickAmount == resourcesRequiredCount[BRICK]));
+
+                    size_t actualWheatAmount = TestPlayer::getResourceCount(p1, Resources::Wheat);
+                    CHECK((actualWheatAmount == resourcesRequiredCount[WHEAT]));
+
+                    size_t actualWoolAmount = TestPlayer::getResourceCount(p1, Resources::Wool);
+                    CHECK((actualWoolAmount == resourcesRequiredCount[WOOL]));
+
+                    size_t actualWoodAmount = TestPlayer::getResourceCount(p1, Resources::Wood);
+                    CHECK((actualWoodAmount == resourcesRequiredCount[WOOD]));
+
+                    size_t actualOreAmount = TestPlayer::getResourceCount(p1, Resources::Ore);
+                    CHECK((actualOreAmount == resourcesRequiredCount[ORE]));
+
+                    // Verify that p1 has the correct winning points
+                    CHECK((p1.getWinningPoints() == 2));
+                }
+            }
+        }
+    }
+
+    // Cleanup the board after tests
+    board->cleanBoard();
+}
+
+TEST_CASE("Test Place Regular Settlements and Roads") {
+    // Initial setup
+    // Create 3 players
+    Player p1("ido");
+    Player p2("shoam");
+    Player p3("shlomi");
+
+    // Initialize the game and board
+    Catan catan(p1, p2, p3);
+    Board* board = Board::getInstance();
+
+    // Place initial settlements and roads for setup
+    p1.setTurn(true);
+    p1.PlaceFirstSettlements(6, 1, 8, 0);
+    p1.placeFirstRoads(6, 1, 6, 0, 8, 0, 7, 0);
+
+    p2.setTurn(true);
+    p2.PlaceFirstSettlements(5, 2, 7, 1);
+    p2.placeFirstRoads(5, 2, 5, 1, 7, 1, 6, 1);
+
+    p3.setTurn(true);
+    p3.PlaceFirstSettlements(8, 2, 9, 1);
+    p3.placeFirstRoads(8, 2, 9, 2, 9,  1 , 8, 1);
+
+    WHEN("Placing a regular settlement and road") {
+        // Manually add resources to p1
+        p1.addResource(Resources::Wood, 1);
+        p1.addResource(Resources::Brick, 1);
+        p1.addResource(Resources::Wheat, 1);
+        p1.addResource(Resources::Wool, 1);
+
+        // Set p1's turn
+        p1.setTurn(true);
+
+        // Place a settlement at a new location
+        p1.placeSettlement(7, 0);
+
+        Vertex* newSettlementVertex = board->getVertex(7, 0);
+        THEN("The settlement should be correctly placed") {
+            CHECK((newSettlementVertex->getOwner() == &p1));
+        }
+
+        AND_WHEN("Placing a road connected to the new settlement") {
+            // Manually add resources to p1
+            p1.addResource(Resources::Wood, 1);
+            p1.addResource(Resources::Brick, 1);
+
+            // Place a road connected to the new settlement
+            p1.placeRoad(7, 0, 6, 0);
+
+            Vertex* roadVertex1 = board->getVertex(6, 0);
+            Vertex* roadVertex2 = board->getVertex(7, 0);
+            Edge* newRoad = board->getEdge(roadVertex1, roadVertex2);
+
+            THEN("The road should be correctly placed") {
+                CHECK((newRoad->getOwner() == &p1));
+            }
+        }
+    }
+
+    // Cleanup the board after tests
+    board->cleanBoard();
+}

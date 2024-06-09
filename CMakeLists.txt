@@ -29,4 +29,6 @@ add_executable(Catan main.cpp
         Tile.hpp
         ResourceManagement.cpp
         ResourceManagement.hpp
+        RoadAndSettlementManagement.cpp
+        RoadAndSettlementManagement.hpp
 )

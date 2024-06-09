@@ -6,12 +6,14 @@
 #include "CardDeck.hpp"
 #include "DevelopmentCardManagement.hpp"
 #include "ResourceManagement.hpp"
+#include "RoadAndSettlementManagement.hpp"
 #include "Board.hpp"
 
 
 namespace mycatan {
     class ResourceManagement;
     class DevelopmentCardManagement;
+    class RoadAndSettlementManagement;
     class Edge;
     class Vertex;
     class Player {
@@ -51,6 +53,7 @@ namespace mycatan {
         std::vector<Card*> getOwnedCards() ;
         [[nodiscard]] size_t getKnightCount() const;
         [[nodiscard]]  std::vector<Edge*> getRoads() const;
+        [[nodiscard]] std::vector<Vertex*> getSettlements() const;
 
         // Setters
         void setTurn(bool state);
@@ -71,12 +74,16 @@ namespace mycatan {
         // Private methods
         void handleDiceRoll(size_t diceRoll);
 
-
-        friend class ResourceManagement; // Allow ResourceManagement to access private members
-        friend class DevelopmentCardManagement; // Allow DevelopmentCardManagement to access private members
+        //// Allow Management classes  to access private members
+        friend class ResourceManagement;
+        friend class DevelopmentCardManagement;
+        friend class RoadAndSettlementManagement;
         friend class TestPlayer; // Allow test class access to private members
 
 
+        void placeRoadWithoutCheck(size_t x1, size_t y1, size_t x2, size_t y2);
+
+        void allocateResourcesForSettlement(Vertex *vertex);
     };
 
 } // namespace mycatan

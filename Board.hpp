@@ -28,7 +28,7 @@ namespace mycatan {
 
         // Destructor
         ~Board();
-
+        void cleanBoard();
         // Methods for board initialization and resource allocation
         void initializeBoard();
         void allocateResources(size_t diceRoll);
@@ -47,6 +47,7 @@ namespace mycatan {
         // Static member to hold the predefined tile configuration
         static std::map<std::pair<size_t, size_t>, TileConfig> tileConfigurations;
 
+        std::vector<Tile *> getAdjacentTiles(Vertex *vertex) const;
     private:
         // Private constructor for the singleton pattern
         Board();
@@ -64,6 +65,9 @@ namespace mycatan {
         Vertex* getOrCreateVertex(size_t x, size_t y);
         Edge* getOrCreateEdge(Vertex* v1, Vertex* v2);
         void createTile(size_t x, size_t y, size_t id, Resources resourceType);
+
+
+
     };
 
 } // namespace mycatan

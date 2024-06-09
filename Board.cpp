@@ -36,8 +36,7 @@ std::map<std::pair<size_t, size_t>, TileConfig> Board::tileConfigurations = {
 Board::Board() {
     initializeBoard();
 }
-
-Board::~Board() {
+void Board:: cleanBoard(){
     // Delete all tiles
     for (Tile* tile : tiles) {
         delete tile;
@@ -55,6 +54,13 @@ Board::~Board() {
         delete edgePair.second;
     }
     edges.clear();
+
+    // Reset the singleton instance
+    boardInstance = nullptr;
+}
+
+Board::~Board() {
+   cleanBoard();
 }
 
 // Public method to get the singleton instance
@@ -138,6 +144,16 @@ Tile* Board::getTile(size_t id , Resources resource) {
     return nullptr;
 }
 
+std::vector<Tile*> Board::getAdjacentTiles(Vertex* vertex) const {
+    std::vector<Tile*> adjacentTiles;
+
+    if (vertexToTiles.find(vertex) != vertexToTiles.end()) {
+        adjacentTiles = vertexToTiles.at(vertex);
+    }
+
+    return adjacentTiles;
+}
+
 Vertex* Board::getVertex(size_t x, size_t y) {
     auto key = std::make_pair(x, y);
     if (vertices.find(key) != vertices.end()) {
@@ -147,7 +163,7 @@ Vertex* Board::getVertex(size_t x, size_t y) {
 }
 
 Edge* Board::getEdge(Vertex* v1, Vertex* v2) {
-    auto key = std::make_pair(v1, v2);
+    auto key = std::make_pair(std::min(v1, v2), std::max(v1, v2));
     if (edges.find(key) != edges.end()) {
         return edges[key];
     }
@@ -193,5 +209,30 @@ size_t Board::getVertexCount() const {
 size_t Board::getEdgeCount() const {
     return edges.size();
 }
+
+bool Board::canPlaceRoad(Player *player, Vertex *vertex1, Vertex *vertex2) {
+    // Check that the road has no other owner
+    Edge* road = getEdge(vertex1, vertex2);
+    if (road->hasRoad()) {
+        return false;
+    }
+
+    // Check that the player has a settlement or road connected to this road
+    for (Vertex* settlement : player->getSettlements()) {
+        if (road->isContainVertex(vertex1) || road->isContainVertex(vertex2)) {
+            return true;
+        }
+    }
+
+    for (Edge* existingRoad : player->getRoads()) {
+        if (existingRoad->getVertex1() == vertex1 || existingRoad->getVertex2() == vertex1 ||
+            existingRoad->getVertex1() == vertex2 || existingRoad->getVertex2() == vertex2) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 
 
