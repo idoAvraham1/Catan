@@ -50,3 +50,16 @@
 2550	4035	7396574669069747	CMakeFiles/Catan.dir/Tile.cpp.obj	28923c40b4c86ca0
 3205	4672	7396574675436746	CMakeFiles/Catan.dir/ResourceManagement.cpp.obj	ceeec6d0af770d4e
 4672	6004	7396574709384272	Catan.exe	4ad6a9ab0984a4c
+104	7318	7396636629926665	CMakeFiles/Catan.dir/DevelopmentCard.cpp.obj	22bab70ac5b05d4b
+69	7370	7396636630330359	CMakeFiles/Catan.dir/Catan.cpp.obj	fd8570cb328cc043
+124	7384	7396636630541549	CMakeFiles/Catan.dir/DevelopmentCardManagement.cpp.obj	6835d40cf4646c21
+97	7501	7396636631633385	CMakeFiles/Catan.dir/Player.cpp.obj	bc083c6d2f84e143
+84	8304	7396636639727722	CMakeFiles/Catan.dir/Board.cpp.obj	185c989e8c7e3a00
+113	8401	7396636640705710	CMakeFiles/Catan.dir/Test.cpp.obj	b0173c82c77250d7
+7370	9937	7396636656153120	CMakeFiles/Catan.dir/Edge.cpp.obj	a7e24c1a43c86175
+7321	10042	7396636657216866	CMakeFiles/Catan.dir/Vertex.cpp.obj	a394810d39653c1d
+7502	10306	7396636659863178	CMakeFiles/Catan.dir/RoadAndSettlementManagement.cpp.obj	a808191d74081f27
+8305	10730	7396636664120747	CMakeFiles/Catan.dir/Tile.cpp.obj	28923c40b4c86ca0
+7384	10748	7396636664266716	CMakeFiles/Catan.dir/ResourceManagement.cpp.obj	ceeec6d0af770d4e
+51	5957	7396637059593705	CMakeFiles/Catan.dir/Player.cpp.obj	bc083c6d2f84e143
+5958	11692	7396637116870848	Catan.exe	4ad6a9ab0984a4c
