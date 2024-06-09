@@ -10,17 +10,40 @@ namespace mycatan {
 
     class Card {
     public:
-        // Constructor
+        /**
+          * @brief Constructor for the Card class.
+          * @param type Type of the card.
+          */
         explicit Card(std::string type);
         virtual ~Card() = default;
 
-        // Pure virtual functions
+        /**
+         * @brief Get the type of the card.
+         * @return The type of the card as a string.
+         */
         [[nodiscard]] virtual std::string getType() const = 0;
 
-        // Common methods
+        /**
+         * @brief Set the owner of the card.
+         * @param player Pointer to the player who owns the card.
+         */
         void setOwner(Player* player);
+
+        /**
+        * @brief Get the name of the card owner.
+        * @return Name of the owner or a message if the card is still in the deck.
+        */
         [[nodiscard]] std::string getOwner() const;
+
+        /**
+        * @brief Check if the card has been used.
+        * @return True if the card is used, false otherwise.
+        */
         [[nodiscard]] bool isUsed() const;
+
+        /**
+         * @brief Mark the card as used.
+         */
         void setUsed();
 
     protected:

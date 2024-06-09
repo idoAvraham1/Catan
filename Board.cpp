@@ -86,6 +86,7 @@ void Board::initializeBoard() {
 
 Vertex* Board::getOrCreateVertex(size_t x, size_t y) {
     auto key = std::make_pair(x, y);
+    // If the vertex doesn't exist, create it
     if (vertices.find(key) == vertices.end()) {
         vertices[key] = new Vertex(x,y);
     }
@@ -94,6 +95,7 @@ Vertex* Board::getOrCreateVertex(size_t x, size_t y) {
 
 Edge* Board::getOrCreateEdge(Vertex* v1, Vertex* v2) {
     auto key = std::make_pair(std::min(v1, v2), std::max(v1, v2));
+    // If the edge doesn't exist, create it
     if (edges.find(key) == edges.end()) {
         edges[key] = new Edge(v1, v2);
     }
@@ -147,6 +149,7 @@ Tile* Board::getTile(size_t id , Resources resource) {
 std::vector<Tile*> Board::getAdjacentTiles(Vertex* vertex) const {
     std::vector<Tile*> adjacentTiles;
 
+    // Get the tiles adjacent to the given vertex
     if (vertexToTiles.find(vertex) != vertexToTiles.end()) {
         adjacentTiles = vertexToTiles.at(vertex);
     }
@@ -156,6 +159,7 @@ std::vector<Tile*> Board::getAdjacentTiles(Vertex* vertex) const {
 
 Vertex* Board::getVertex(size_t x, size_t y) {
     auto key = std::make_pair(x, y);
+    // Return the vertex if it exists
     if (vertices.find(key) != vertices.end()) {
         return vertices[key];
     }
@@ -164,6 +168,7 @@ Vertex* Board::getVertex(size_t x, size_t y) {
 
 Edge* Board::getEdge(Vertex* v1, Vertex* v2) {
     auto key = std::make_pair(std::min(v1, v2), std::max(v1, v2));
+    // Return the edge if it exists
     if (edges.find(key) != edges.end()) {
         return edges[key];
     }
@@ -175,6 +180,7 @@ bool Board::canPlaceSettlement(Player* player, Vertex* vertex ) {
         return false; // The vertex is already occupied
     }
 
+    // Check if the player has a road leading to this vertex
     for (Edge* road : player->getRoads()) {
         if (road->getVertex1() == vertex || road->getVertex2() == vertex) {
             return true; // The player has a road leading to this vertex

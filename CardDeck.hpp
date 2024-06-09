@@ -31,13 +31,30 @@ namespace mycatan {
          */
         ~CardDeck();
 
+        /**
+         * @brief Get the Biggest Army card from the deck.
+         * @return Pointer to the Biggest Army card.
+         * @throws std::runtime_error if no Biggest Army cards are left in the deck.
+         */
         [[nodiscard]] static BiggestArmyCard* getBiggestArmyCard() ;
 
+        /**
+         * @brief Clean up the deck by deleting all dynamically allocated cards.
+         */
         static void cleanUp(); // Method to free resources
 
+        /**
+         * @brief Returns the Biggest Army card to the deck.
+         * @param card Pointer to the Biggest Army card.
+         */
+        static void returnBiggestArmyCard(Card* biggestArmyCard);
+
     private:
+        // Vector to store the cards in the deck
         static std::vector<Card*> cards;
+        // Number of Biggest Army cards remaining in the deck
         static size_t biggestArmyCardsInDeck;
+        // Flag to check if the deck has been initialized
         static bool isInitialized;
 
         /**
@@ -56,6 +73,7 @@ namespace mycatan {
          * @brief Shuffle the deck of cards.
          */
         static void shuffleDeck();
+
     };
 
 } // namespace mycatan

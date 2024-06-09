@@ -287,8 +287,47 @@ TEST_CASE("Test cards usage"){
          CHECK( (p1.getWinningPoints() == 2) );
 
          // clean up
-         TestPlayer::deletePOwnedCards(p1);
+        TestPlayer::deletePlayerOwnedCards(p1);
         }
+
+    SUBCASE("Test BiggestArmyCard lost "){
+        // Create 3 knight cards
+        auto* firstKnightCard = new KnightCard();
+        auto* secondKnightCard = new KnightCard();
+        auto* thirdKnightCard = new KnightCard();
+
+        // Add the cards to p1
+        TestPlayer::addCardToPlayer(p1, firstKnightCard);
+        TestPlayer::addCardToPlayer(p1, secondKnightCard);
+        TestPlayer::addCardToPlayer(p1, thirdKnightCard);
+
+        // Set p1 turn to true and obtain the Biggest Army card
+        p1.setTurn(true);
+        p1.getBiggestArmyCard();
+
+        // Verify p1 owns the Biggest Army card and has the correct points
+        CHECK(TestPlayer::isOwningBiggestArmyCard(p1));
+        CHECK((p1.getWinningPoints() == 2));
+
+        // Create and add a Monopoly card to p2
+        auto* monopolyCard = new MonopolyCard();
+        TestPlayer::addCardToPlayer(p2, monopolyCard);
+
+        // Now p2 trades a Monopoly card for a Knight card with p1
+        p2.setTurn(true);
+        p2.tradeDevelopmentCards(&p1, "Knight", "Monopoly");
+
+        // Verify that p1 lost the Biggest Army card and two points, and p2 owns a Knight card
+        CHECK(!TestPlayer::isOwningBiggestArmyCard(p1));
+        CHECK((p1.getWinningPoints() == 0));
+        CHECK((p2.getKnightCount() == 1));
+        CHECK(!TestPlayer::isOwningBiggestArmyCard(p1));
+        CHECK((p1.getWinningPoints() == 0));
+
+        // Clean up
+        TestPlayer::deletePlayerOwnedCards(p1);
+        TestPlayer::deletePlayerOwnedCards(p2);
+    }
 }
 
 TEST_CASE("Test card Deck ") {

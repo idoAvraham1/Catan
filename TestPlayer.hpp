@@ -28,8 +28,11 @@ namespace mycatan {
             size_t resourceIndex = resourceToInt(resources);
             return player.resources[resourceIndex];
         }
-        static void deletePOwnedCards(Player& player){
+        static void deletePlayerOwnedCards(Player& player){
             DevelopmentCardManagement::deleteOwnedCards(&player);
+        }
+        static bool isOwningBiggestArmyCard(Player& player){
+            return player.owningBiggestArmyCard;
         }
     };
 

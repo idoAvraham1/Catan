@@ -6,7 +6,8 @@ using namespace mycatan;
 Player::Player(std::string name)
         : name(std::move(name)), resources(5, 0),
         othersPlayers(2, nullptr),winning_points(0),
-        isMyTurn(false), knightCount(0) , placedFirstSettlements(false) , placedFirstRoads(false) {}
+        isMyTurn(false), knightCount(0) , placedFirstSettlements(false)
+        , placedFirstRoads(false) ,owningBiggestArmyCard(false) {}
 
 Player::~Player() = default;
 
@@ -89,12 +90,17 @@ void Player::useMonopolyCard(Resources giveMeThatResource) {
     DevelopmentCardManagement::useMonopolyCard(this, giveMeThatResource);
 }
 
+void Player::useRoadCard(size_t x1, size_t y1, size_t x2, size_t y2, size_t x3, size_t y3, size_t x4, size_t y4) {
+    DevelopmentCardManagement::useRoadCard(this , x1, y1 , x2 , y2 , x3 , y3 , x4 , y4);
+}
+
 void Player::useYearOfPlentyCard(Resources resource1, Resources resource2) {
     DevelopmentCardManagement::useYearOfPlentyCard(this, resource1, resource2);
 }
 
 void Player::getBiggestArmyCard() {
     DevelopmentCardManagement::getBiggestArmyCard(this);
+    owningBiggestArmyCard = true; // mark the player as owning biggest army card
 }
 
 void Player::tradeDevelopmentCards(Player *other, const std::string &cardIn, const std::string &cardOut) {
@@ -147,6 +153,8 @@ std::vector<Vertex *> Player::getSettlements() const {
 void Player::setTurn(bool state) {
     isMyTurn = state;
 }
+
+
 
 
 

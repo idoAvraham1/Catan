@@ -34,6 +34,8 @@ namespace mycatan {
         void useYearOfPlentyCard(Resources resource1, Resources resource2);
         void getBiggestArmyCard();
         void tradeDevelopmentCards(Player *other , const std::string& cardIn , const std::string&  cardOut);
+        void useRoadCard(size_t x1 , size_t y1 , size_t x2 , size_t y2 , size_t x3 , size_t y3 , size_t x4 , size_t y4);
+
 
         // Resource methods
         void tradeResources(Player *other, Resources resourceIn , Resources resourceOut , size_t inAmount , size_t outAmount);
@@ -73,8 +75,9 @@ namespace mycatan {
         size_t knightCount;
         bool placedFirstSettlements;
         bool placedFirstRoads;
+        bool owningBiggestArmyCard;
 
-        // Allow Management classes  to access private members
+        // Allow Management classes to access private members
         friend class ResourceManagement;
         friend class DevelopmentCardManagement;
         friend class RoadAndSettlementManagement;
