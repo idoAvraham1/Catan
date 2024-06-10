@@ -3,39 +3,36 @@
 
 using namespace mycatan;
 
-Catan::Catan(Player &p1, Player &p2, Player &p3) {
-     // add the players to the player vector
-     this->players.push_back(&p1);
-     this->players.push_back(&p2);
-     this->players.push_back(&p3);
+Catan::Catan(Player& p1, Player& p2, Player& p3) : currentPlayerTurn(0), isWinner(false) {
+    // Add the players to the player vector
+    players.push_back(&p1);
+    players.push_back(&p2);
+    players.push_back(&p3);
 
-     // other set-ups
-     this->currentPlayerTurn = 0;
-     isWinner = false;
-
-     // init the board
-     //this->board = Board::getInstance();
+    // Initialize the board and the dev card deck
+    board = Board::getInstance();
 }
 
-// choose starting player randomly
+// Choose starting player randomly
 size_t Catan::chooseStartingPlayer() {
-    std::random_device rd; // obtain a random number from hardware
-    std::mt19937 gen(rd()); // seed the generator
-    std::uniform_int_distribution<> distr(0, (int)players.size()-1); // define the range
+    std::random_device rd;   // Obtain a random number from hardware
+    std::mt19937 gen(rd());  // Seed the generator
+    std::uniform_int_distribution<> distr(0, static_cast<int>(players.size()) - 1);  // Define the range
 
-    currentPlayerTurn = distr(gen); // generate random index
+    // currentPlayerTurn = distr(gen);  // Generate random index
+    currentPlayerTurn = 0;  // For simplicity, let p1 start the game
     std::cout << "Starting player: " << players[currentPlayerTurn]->getName() << std::endl;
 
-    // set the player turn to true
+    // Set the player's turn to true
     players[currentPlayerTurn]->setTurn(true);
 
-    // add other players to each of the players.
+    // Add other players to each player
     addOtherPlayersToEachPlayer();
 
     return currentPlayerTurn;
 }
-void Catan::addOtherPlayersToEachPlayer(){
-    // add other players to each of the players.
+
+void Catan::addOtherPlayersToEachPlayer() {
     for (size_t i = 0; i < players.size(); ++i) {
         size_t nextPlayerIndex = (i + 1) % players.size();
         size_t afterNextPlayerIndex = (i + 2) % players.size();
@@ -43,9 +40,25 @@ void Catan::addOtherPlayersToEachPlayer(){
     }
 }
 
-std::vector<Player*> Catan::getPlayers(){
-    return this->players;
+std::vector<Player*> Catan::getPlayers() {
+    return players;
 }
 
+bool Catan::thereIsWinner() {
+    for (Player* player : players) {
+        if (player->getWinningPoints() >= 10) {
+            endGame(player);
+            return true;
+        }
+    }
+    return false;
+}
 
+void Catan::endGame(Player* player) {
+    std::cout << player->getName() << " wins the game!" << std::endl;
 
+    // Clean up
+    if (board) {
+        board->cleanup();
+    }
+}

@@ -1,19 +1,21 @@
 #include "DevelopmentCardManagement.hpp"
+
 #include "Player.hpp"
 
 using namespace mycatan;
 
-
-void DevelopmentCardManagement::buyDevelopmentCard(Player *player) {
+void DevelopmentCardManagement::buyDevelopmentCard(Player* player) {
     // Check if the player has enough resources and it is their turn
     if (!ResourceManagement::hasEnoughResources(player, "developmentCard") || !player->getMyTurn())
-        throw std::runtime_error("Cannot buy development card! Check your resources and play only on your turn.");
+        throw std::runtime_error(
+            "Cannot buy development card! Check your "
+            "resources and play only on your turn.");
 
     // Deduct the resources for buying a development card
     ResourceManagement::decreaseResourcesAfterAction(player, "developmentCard");
 
     // Draw a new card from the deck, set the new owner of the card
-    Card *newCard = CardDeck::drawCard();
+    Card* newCard = CardDeck::drawCard();
     newCard->setOwner(player);
     player->ownedCards.push_back(newCard);
 
@@ -26,54 +28,67 @@ void DevelopmentCardManagement::buyDevelopmentCard(Player *player) {
     std::cout << player->getName() << " drew a " << newCard->getType() << " card." << std::endl;
 }
 
-
-void DevelopmentCardManagement::useMonopolyCard(Player *player, Resources giveMeThatResource) {
+void DevelopmentCardManagement::useMonopolyCard(Player* player, Resources giveMeThatResource) {
     // Get the usable Monopoly card
-    Card *monopolyCard = getUsableCard(player, "Monopoly");
+    Card* monopolyCard = getUsableCard(player, "Monopoly");
 
     // Collect all the resources of the specified type from other players
     size_t totalResourcesCollected = 0;
-    for (auto &otherPlayer: player->getOtherPlayers()) {
+    for (auto& otherPlayer : player->getOtherPlayers()) {
         totalResourcesCollected += ResourceManagement::giveAllResourcesOfType(otherPlayer, giveMeThatResource);
     }
 
     // Add the resources to this player
     ResourceManagement::addResource(player, giveMeThatResource, totalResourcesCollected);
 
-    std::cout << player->name << " used a Monopoly card! Collected " << totalResourcesCollected
-              << " " << resourceToString(giveMeThatResource) << " from other players." << std::endl;
+    std::cout << player->name << " used a Monopoly card! Collected " << totalResourcesCollected << " "
+              << resourceToString(giveMeThatResource) << " from other players." << std::endl;
 
-    delete monopolyCard; // Delete the used card
+    delete monopolyCard;  // Delete the used card
     player->endTurn();
 }
 
-
-void DevelopmentCardManagement::useYearOfPlentyCard(Player *player, Resources resource1, Resources resource2) {
+void DevelopmentCardManagement::useYearOfPlentyCard(Player* player, Resources resource1, Resources resource2) {
     // Get the usable Year of Plenty card
-    Card *yearOfPlentyCard = getUsableCard(player, "Year of Plenty");
+    Card* yearOfPlentyCard = getUsableCard(player, "Year of Plenty");
 
     // Add the specified resources to the player
     ResourceManagement::addResource(player, resource1, 1);
     ResourceManagement::addResource(player, resource2, 1);
 
-    std::cout << player->name << " used a Year of Plenty card! Gained "
-              << resourceToString(resource1) << " and " << resourceToString(resource2) << "." << std::endl;
+    std::cout << player->name << " used a Year of Plenty card! Gained " << resourceToString(resource1) << " and "
+              << resourceToString(resource2) << "." << std::endl;
 
-    delete yearOfPlentyCard; // Delete the used card
+    delete yearOfPlentyCard;  // Delete the used card
     player->endTurn();
 }
 
+void DevelopmentCardManagement::useRoadCard(Player* player, size_t x1, size_t y1, size_t x2, size_t y2, size_t x3,
+                                            size_t y3, size_t x4, size_t y4) {
+    Card* roadCard = getUsableCard(player, "Road");
 
-void DevelopmentCardManagement::getBiggestArmyCard(Player *player) {
+    // build the roads if possible in the given coordinates
+    RoadAndSettlementManagement::placeFirstRoad(player, x1, y1, x2, y2);  // place the first road
+    RoadAndSettlementManagement::placeFirstRoad(player, x3, y3, x4, y4);  // place the second road
+
+    // Output message indicating the roads built
+    std::cout << player->name << " used a Road Building card and built roads at (" << x1 << ", " << y1 << ") to (" << x2
+              << ", " << y2 << ") and (" << x3 << ", " << y3 << ") to (" << x4 << ", " << y4 << ")." << std::endl;
+
+    // delete the card after usage
+    delete roadCard;
+}
+
+void DevelopmentCardManagement::getBiggestArmyCard(Player* player) {
     // Check if the player has enough knight cards and it is their turn
     if (player->knightCount < 3 || !player->getMyTurn())
-        throw std::runtime_error("Not enough knight cards to get the biggest army card! / Play at your turn.");
+        throw std::runtime_error(
+            "Not enough knight cards to get the biggest army "
+            "card! / Play at your turn.");
 
     // Get a new BiggestArmyCard from the deck and add it to the player's cards
-    BiggestArmyCard *biggestArmyCard = CardDeck::getBiggestArmyCard();
+    BiggestArmyCard* biggestArmyCard = CardDeck::getBiggestArmyCard();
     player->ownedCards.push_back(biggestArmyCard);
-
-
 
     // Add points to this player
     player->winning_points += 2;
@@ -81,12 +96,11 @@ void DevelopmentCardManagement::getBiggestArmyCard(Player *player) {
     player->endTurn();
 }
 
-
-void DevelopmentCardManagement::tradeDevelopmentCards(Player *thisPlayer, Player *other, const std::string &cardIn,
-                                                      const std::string &cardOut) {
+void DevelopmentCardManagement::tradeDevelopmentCards(Player* thisPlayer, Player* other, const std::string& cardIn,
+                                                      const std::string& cardOut) {
     // Verify that both players own the desired cards
-    Card *card_In = getOwnedCard(other, cardIn);
-    Card *card_Out = getOwnedCard(thisPlayer, cardOut);
+    Card* card_In = getOwnedCard(other, cardIn);
+    Card* card_Out = getOwnedCard(thisPlayer, cardOut);
     if (card_In == nullptr || card_Out == nullptr)
         throw std::runtime_error("Players don't have the specified card, or the cards don't exist.");
 
@@ -95,40 +109,38 @@ void DevelopmentCardManagement::tradeDevelopmentCards(Player *thisPlayer, Player
     removeCard(other, card_In);
 
     // handle the incoming card for each player
-    handleNewDevCard(thisPlayer , card_In);
-    handleNewDevCard(other , card_Out);
+    handleNewDevCard(thisPlayer, card_In);
+    handleNewDevCard(other, card_Out);
 
     std::cout << thisPlayer->name << " traded " << card_Out->getType() << " card with " << other->name << " for "
               << card_In->getType() << " card." << std::endl;
 }
 
-void DevelopmentCardManagement::handleNewDevCard(Player* player,Card* cardIn){
+void DevelopmentCardManagement::handleNewDevCard(Player* player, Card* cardIn) {
     // set the new owner, and add the new card to the player
     cardIn->setOwner(player);
     player->ownedCards.push_back(cardIn);
 
     // update player stats according to the new card
-    if(cardIn->getType() == "Knight")
+    if (cardIn->getType() == "Knight")
         player->knightCount++;
-    if(cardIn->getType() == "Winning Points")
+    if (cardIn->getType() == "Winning Points")
         player->winning_points++;
 }
 
-void DevelopmentCardManagement::deleteOwnedCards(Player *player) {
-    for (Card *card: player->ownedCards) {
+void DevelopmentCardManagement::deleteOwnedCards(Player* player) {
+    for (Card* card : player->ownedCards) {
         delete card;
     }
     player->ownedCards.clear();
 }
 
-
-size_t DevelopmentCardManagement::getKnightCount(const Player *player) {
+size_t DevelopmentCardManagement::getKnightCount(const Player* player) {
     return player->knightCount;
 }
 
-
-Card *DevelopmentCardManagement::getOwnedCard(const Player *player, const std::string &cardType) {
-    for (Card *myCard: player->ownedCards) {
+Card* DevelopmentCardManagement::getOwnedCard(const Player* player, const std::string& cardType) {
+    for (Card* myCard : player->ownedCards) {
         if (myCard->getType() == cardType) {
             return myCard;
         }
@@ -136,10 +148,9 @@ Card *DevelopmentCardManagement::getOwnedCard(const Player *player, const std::s
     return nullptr;
 }
 
-
-Card *DevelopmentCardManagement::getUsableCard(Player *player, const std::string &cardType) {
+Card* DevelopmentCardManagement::getUsableCard(Player* player, const std::string& cardType) {
     // Get the owned card of the specified type
-    Card *baseCard = getOwnedCard(player, cardType);
+    Card* baseCard = getOwnedCard(player, cardType);
 
     // Check if the player owns the card
     if (!player->getMyTurn() || baseCard == nullptr) {
@@ -149,12 +160,11 @@ Card *DevelopmentCardManagement::getUsableCard(Player *player, const std::string
     return baseCard;
 }
 
-
-void DevelopmentCardManagement::removeCard(Player *player, Card *cardToRemove) {
+void DevelopmentCardManagement::removeCard(Player* player, Card* cardToRemove) {
     bool found = false;
 
     // Update variables according to the removed card
-    for (Card *ownedCard : player->ownedCards) {
+    for (Card* ownedCard : player->ownedCards) {
         if (ownedCard->getType() == cardToRemove->getType()) {
             found = true;
             if (ownedCard->getType() == "Knight") {
@@ -178,12 +188,12 @@ void DevelopmentCardManagement::removeCard(Player *player, Card *cardToRemove) {
         if (it != player->ownedCards.end()) {
             player->ownedCards.erase(it);
         }
-    }else {
+    } else {
         throw std::runtime_error(player->name + " does not own the card: " + cardToRemove->getType());
     }
 }
 
-void DevelopmentCardManagement::returnBiggestArmyCardToDeck(Player *player) {
+void DevelopmentCardManagement::returnBiggestArmyCardToDeck(Player* player) {
     // Find and remove the Biggest Army card from the player
     Card* biggestArmyCard = nullptr;
     for (Card* card : player->ownedCards) {
@@ -194,7 +204,8 @@ void DevelopmentCardManagement::returnBiggestArmyCardToDeck(Player *player) {
     }
     // the biggest Army card was found
     if (biggestArmyCard) {
-        player->ownedCards.erase(std::remove(player->ownedCards.begin(), player->ownedCards.end(), biggestArmyCard), player->ownedCards.end());
+        player->ownedCards.erase(std::remove(player->ownedCards.begin(), player->ownedCards.end(), biggestArmyCard),
+                                 player->ownedCards.end());
         player->winning_points -= 2;
         player->owningBiggestArmyCard = false;
         CardDeck::returnBiggestArmyCard(biggestArmyCard);

@@ -1,21 +1,20 @@
-//written by Ido Avraham : 208699181
-//EMAIL: idoavraham086@gmail.com
+// written by Ido Avraham : 208699181
+// EMAIL: idoavraham086@gmail.com
 
-#include "Catan_API.hpp"
-#include "doctest.h"
+#include "Board.hpp"
+#include "CardDeck.hpp"
 #include "Catan.hpp"
+#include "Catan_API.hpp"
+#include "DevelopmentCard.hpp"
 #include "Player.hpp"
 #include "TestPlayer.hpp"
-#include "DevelopmentCard.hpp"
-#include "CardDeck.hpp"
-#include "Board.hpp"
 #include "Tile.hpp"
+#include "doctest.h"
 
 using namespace mycatan;
 using namespace std;
 
 TEST_CASE("Turns logic ") {
-
     // create 3 players
     Player p1("ido");
     Player p2("shoam");
@@ -25,34 +24,34 @@ TEST_CASE("Turns logic ") {
 
     SUBCASE("Starting player index is within valid range") {
         size_t startingPlayerIndex = catan.chooseStartingPlayer();
-        CHECK(( 0 <= startingPlayerIndex && startingPlayerIndex <= 2));
+        CHECK((0 <= startingPlayerIndex && startingPlayerIndex <= 2));
     }
 
     SUBCASE("Player turn is correctly set") {
         size_t startingPlayerIndex = catan.chooseStartingPlayer();
-        CHECK(( 0<= startingPlayerIndex && startingPlayerIndex <= 2));
+        CHECK((0 <= startingPlayerIndex && startingPlayerIndex <= 2));
         // Check if the correct player turn is set
-        CHECK( (p1.getMyTurn() ==(startingPlayerIndex == 0)) ); // p1's turn is set to true if and only if startingPlayerIndex is 0.
-        CHECK( (p2.getMyTurn() == (startingPlayerIndex == 1)) );
-        CHECK( (p3.getMyTurn() == (startingPlayerIndex == 2)) ) ;
+        CHECK((p1.getMyTurn() ==
+               (startingPlayerIndex == 0)));  // p1's turn is set to true if and only if startingPlayerIndex is 0.
+        CHECK((p2.getMyTurn() == (startingPlayerIndex == 1)));
+        CHECK((p3.getMyTurn() == (startingPlayerIndex == 2)));
     }
 
     SUBCASE("Other players are added correctly") {
         catan.chooseStartingPlayer();
         auto players = catan.getPlayers();
 
-        CHECK( (p1.getOtherPlayers().size() == 2) );
+        CHECK((p1.getOtherPlayers().size() == 2));
         CHECK(p1.getOtherPlayers()[NEXT_PLAYER]->getName() == "shoam");
         CHECK(p1.getOtherPlayers()[BEFORE_PLAYER]->getName() == "shlomi");
 
-        CHECK( (p2.getOtherPlayers().size() == 2) );
-        CHECK( (p2.getOtherPlayers()[NEXT_PLAYER]->getName() == "shlomi") );
-        CHECK( (p2.getOtherPlayers()[BEFORE_PLAYER]->getName() == "ido") );
+        CHECK((p2.getOtherPlayers().size() == 2));
+        CHECK((p2.getOtherPlayers()[NEXT_PLAYER]->getName() == "shlomi"));
+        CHECK((p2.getOtherPlayers()[BEFORE_PLAYER]->getName() == "ido"));
 
-        CHECK( (p3.getOtherPlayers().size() == 2) );
+        CHECK((p3.getOtherPlayers().size() == 2));
         CHECK(p3.getOtherPlayers()[NEXT_PLAYER]->getName() == "ido");
         CHECK(p3.getOtherPlayers()[BEFORE_PLAYER]->getName() == "shoam");
-
     }
 
     SUBCASE("turns switches correctly") {
@@ -84,7 +83,7 @@ TEST_CASE("Turns logic ") {
     }
 }
 
-TEST_CASE("Dice logic"){
+TEST_CASE("Dice logic") {
     // init steps
     // create 3 players
     Player p1("ido");
@@ -101,24 +100,24 @@ TEST_CASE("Dice logic"){
         auto players = catan.getPlayers();
 
         size_t res = players[startingPlayerIndex]->rollDice();
-        CHECK(( 2 <= res && res <= 12 ));
+        CHECK((2 <= res && res <= 12));
     }
 
-    SUBCASE("Test 7 rolled in the dice"){
+    SUBCASE("Test 7 rolled in the dice") {
         // add resources to all the players
-        p1.addResource(Resources::Wheat , 6);
-        p1.addResource(Resources::Wool , 6);
-        p2.addResource(Resources::Brick , 6);
-        p2.addResource(Resources::Wool , 6);
-        p3.addResource(Resources::Wood , 6);
+        p1.addResource(Resources::Wheat, 6);
+        p1.addResource(Resources::Wool, 6);
+        p2.addResource(Resources::Brick, 6);
+        p2.addResource(Resources::Wool, 6);
+        p3.addResource(Resources::Wood, 6);
         p3.addResource(Resources::Ore, 6);
 
         // set p1 true, roll the dice until the outcome is 7
         p1.setTurn(true);
         bool notSeven = true;
-        while(notSeven){
+        while (notSeven) {
             size_t res = p1.rollDice();
-            if ( res == 7)
+            if (res == 7)
                 notSeven = false;
         }
 
@@ -129,24 +128,23 @@ TEST_CASE("Dice logic"){
         CHECK((TestPlayer::getResourceCount(p2, Resources::Wool) == 3));
         CHECK((TestPlayer::getResourceCount(p3, Resources::Wood) == 3));
         CHECK((TestPlayer::getResourceCount(p3, Resources::Ore) == 3));
-
     }
 
-    SUBCASE("Test resources allocation according to the dice rolled"){
+    SUBCASE("Test resources allocation according to the dice rolled") {
         // Place initial settlements and roads for setup
         p1.setTurn(true);
-        p1.PlaceFirstSettlements(2, 0, 3, 0); // Tile (2,0)- Resource: ore, numToken: 10
+        p1.PlaceFirstSettlements(2, 0, 3, 0);  // Tile (2,0)- Resource: ore, numToken: 10
 
         p2.setTurn(true);
-        p2.PlaceFirstSettlements(2, 5 , 3 , 5); // Tile (0,4) - Resource: brick, numToken: 5
+        p2.PlaceFirstSettlements(2, 5, 3, 5);  // Tile (0,4) - Resource: brick, numToken: 5
 
         p3.setTurn(true);
-        p3.PlaceFirstSettlements(8, 2, 9, 1); //Tile (4,1) - Resource :brick, numToken: 10
+        p3.PlaceFirstSettlements(8, 2, 9, 1);  // Tile (4,1) - Resource :brick, numToken: 10
 
         // Upgrade a settlement of p1 to a city
         p1.addResource(Resources::Wheat, 2);
         p1.addResource(Resources::Ore, 3);
-        p1.upgradeToCity(2,0);
+        p1.upgradeToCity(2, 0);
 
         // Manually set a dice roll that matches the resource allocation for a specific tile
         size_t diceRollForOre = 10;
@@ -167,20 +165,18 @@ TEST_CASE("Dice logic"){
         // Verify resource allocation for brick p3 received from the settlement at (8,2)
         // 1 unit of brick from each settlement, 2 from inital placings
         CHECK((TestPlayer::getResourceCount(p2, Resources::Brick) == 4));
-
     }
 
-
-    board->cleanBoard();
+    board->cleanup();
 }
 
-TEST_CASE("Test cards usage"){
+TEST_CASE("Test cards usage") {
     // create 3 players
     Player p1("ido");
     Player p2("shoam");
     Player p3("shlomi");
-    p1.addOthersPlayers(p2,p3);
-    //mycatan::Catan catan(p1, p2, p3);
+    p1.addOthersPlayers(p2, p3);
+    // mycatan::Catan catan(p1, p2, p3);
 
     SUBCASE("Test Year of Plenty usage") {
         /**
@@ -198,10 +194,9 @@ TEST_CASE("Test cards usage"){
         mycatan::TestPlayer::addCardToPlayer(p1, yearOfPlentyCard);
         p1.setTurn(true);
         p1.useYearOfPlentyCard(Resources::Brick, Resources::Wheat);
-        CHECK( (TestPlayer::getResourceCount(p1, Resources::Brick) == 1) );
-        CHECK((TestPlayer::getResourceCount(p1, Resources::Wheat) == 1) );
+        CHECK((TestPlayer::getResourceCount(p1, Resources::Brick) == 1));
+        CHECK((TestPlayer::getResourceCount(p1, Resources::Wheat) == 1));
         CHECK(!p1.getMyTurn());
-
     }
 
     SUBCASE("Test Winning Points card ") {
@@ -215,7 +210,7 @@ TEST_CASE("Test cards usage"){
 
         auto* winningPointsCard = new mycatan::WinningPointsCard();
         TestPlayer::addCardToPlayer(p1, winningPointsCard);
-        CHECK( (p1.getWinningPoints() == 1) );
+        CHECK((p1.getWinningPoints() == 1));
         delete winningPointsCard;
     }
 
@@ -237,23 +232,54 @@ TEST_CASE("Test cards usage"){
         TestPlayer::addCardToPlayer(p1, monopolyCard);
 
         // Simulate resource addition to other players
-        TestPlayer::addResources(p2,Resources::Brick, 5);
-       TestPlayer::addResources(p3,Resources::Brick, 3);
+        TestPlayer::addResources(p2, Resources::Brick, 5);
+        TestPlayer::addResources(p3, Resources::Brick, 3);
 
         p1.setTurn(true);
         p1.useMonopolyCard(Resources::Brick);
 
         // Check if p1 collected the correct number of bricks from p2 and p3
-        CHECK( (TestPlayer::getResourceCount(p1, Resources::Brick) == 8) );
+        CHECK((TestPlayer::getResourceCount(p1, Resources::Brick) == 8));
         // Check that the bricks decreased from p2 and p3
-        CHECK( (TestPlayer::getResourceCount(p2, Resources::Brick) == 0) );
-        CHECK( (TestPlayer::getResourceCount(p3, Resources::Brick) == 0) );
+        CHECK((TestPlayer::getResourceCount(p2, Resources::Brick) == 0));
+        CHECK((TestPlayer::getResourceCount(p3, Resources::Brick) == 0));
         // Check that p1 ended his turn after using the card
         CHECK(!p1.getMyTurn());
-
     }
 
-    SUBCASE("Test BiggestArmyCard"){
+    SUBCASE("Test road card usage") {
+        // get instance of the board
+        Board* board = Board::getInstance();
+        // add to p1 road card
+        RoadCard* roadCard = new RoadCard();
+        TestPlayer::addCardToPlayer(p1, roadCard);
+
+        // place settlements before placing road
+        p1.setTurn(true);
+        p1.PlaceFirstSettlements(6, 1, 7, 1);
+        // now p1 may use the road card
+        p1.useRoadCard(6, 1, 6, 0, 7, 1, 8, 1);
+
+        // get the actual roads from the board
+        Vertex* p1_FirstSettlement = board->getVertex(6, 1);
+        Vertex* p1_SecondSettlement = board->getVertex(7, 1);
+
+        Vertex* firstRoadSecondVertex = board->getVertex(6, 0);
+        Vertex* secondRoadSecondVertex = board->getVertex(8, 1);
+
+        Edge* p1_FirstRoad = board->getEdge(p1_FirstSettlement, firstRoadSecondVertex);
+        Edge* p1_SecondRoad = board->getEdge(p1_SecondSettlement, secondRoadSecondVertex);
+
+        // verify that p1 is the owner of the roads
+        CHECK((p1_FirstRoad->getOwner() == &p1));
+        CHECK((p1_SecondRoad->getOwner() == &p1));
+
+        // verif that other player cant place road on p1 new road
+        CHECK(!board->canPlaceRoad(&p2, p1_FirstSettlement, firstRoadSecondVertex));
+        CHECK(!board->canPlaceRoad(&p2, p1_SecondSettlement, secondRoadSecondVertex));
+    }
+
+    SUBCASE("Test BiggestArmyCard") {
         /**
          * This test case verifies the functionality of the three knights card card.
          *
@@ -265,32 +291,31 @@ TEST_CASE("Test cards usage"){
          * 5. Verify that that the biggest army card is marked as used
          * 6. Verify that p1's turn ends after using the card.
          */
-        
 
-         // create 3 knight cards
-         auto* firstKnightCard = new KnightCard();
-         auto* secondKnightCard = new KnightCard();
-         auto* thirdKnightCard = new KnightCard();
+        // create 3 knight cards
+        auto* firstKnightCard = new KnightCard();
+        auto* secondKnightCard = new KnightCard();
+        auto* thirdKnightCard = new KnightCard();
 
-         // add the cards to p1 
-         TestPlayer::addCardToPlayer(p1, firstKnightCard);
-         TestPlayer::addCardToPlayer(p1, secondKnightCard);
-         TestPlayer::addCardToPlayer(p1, thirdKnightCard);
+        // add the cards to p1
+        TestPlayer::addCardToPlayer(p1, firstKnightCard);
+        TestPlayer::addCardToPlayer(p1, secondKnightCard);
+        TestPlayer::addCardToPlayer(p1, thirdKnightCard);
 
-         //set p1 turn to true, use the card
-         p1.setTurn(true);
-         p1.getBiggestArmyCard();
+        // set p1 turn to true, use the card
+        p1.setTurn(true);
+        p1.getBiggestArmyCard();
 
-         // verify that p1 own 4 cards, and 3 knights , gained 2 winning points
-         CHECK( (p1.getOwnedCards().size() == 4) );
-         CHECK( (p1.getMyTurn() == false) );
-         CHECK( (p1.getWinningPoints() == 2) );
+        // verify that p1 own 4 cards, and 3 knights , gained 2 winning points
+        CHECK((p1.getOwnedCards().size() == 4));
+        CHECK((p1.getMyTurn() == false));
+        CHECK((p1.getWinningPoints() == 2));
 
-         // clean up
+        // clean up
         TestPlayer::deletePlayerOwnedCards(p1);
-        }
+    }
 
-    SUBCASE("Test BiggestArmyCard lost "){
+    SUBCASE("Test BiggestArmyCard lost ") {
         // Create 3 knight cards
         auto* firstKnightCard = new KnightCard();
         auto* secondKnightCard = new KnightCard();
@@ -331,16 +356,18 @@ TEST_CASE("Test cards usage"){
 }
 
 TEST_CASE("Test card Deck ") {
-
     SUBCASE("Player buys development card") {
         /**
-         * This test case verifies the functionality of the CardDeck and the ability of a player to buy a development card.
+         * This test case verifies the functionality of the CardDeck and the ability of a player to buy a development
+         * card.
          *
          * Steps:
          * 1. Initialize the CardDeck.
          * 2. Draw a card and verify its type and that it is correctly removed from the deck.
-         * 3. Create a player and ensure they can buy a development card if they have enough resources and it's their turn.
-         * 4. Verify that the card is added to the player's owned cards and that the player's resources are decremented correctly.
+         * 3. Create a player and ensure they can buy a development card if they have enough resources and it's their
+         * turn.
+         * 4. Verify that the card is added to the player's owned cards and that the player's resources are decremented
+         * correctly.
          */
 
         // Create a player with sufficient resources
@@ -348,9 +375,9 @@ TEST_CASE("Test card Deck ") {
         p1.setTurn(true);
 
         // Ensure the player has enough resources
-        TestPlayer::addResources(p1,Resources::Ore, 1);
-        TestPlayer::addResources(p1,Resources::Wheat, 1);
-        TestPlayer::addResources(p1,Resources::Wool, 1);
+        TestPlayer::addResources(p1, Resources::Ore, 1);
+        TestPlayer::addResources(p1, Resources::Wheat, 1);
+        TestPlayer::addResources(p1, Resources::Wool, 1);
 
         // Save the original deck size
         size_t initialDeckSize = mycatan::CardDeck::getDeckSize();
@@ -358,18 +385,18 @@ TEST_CASE("Test card Deck ") {
         // Buy a development card
         p1.buyDevelopmentCard();
         // get the new deck size after p1 bought a card
-        size_t newDeckSize =  mycatan::CardDeck::getDeckSize();
+        size_t newDeckSize = mycatan::CardDeck::getDeckSize();
 
         // Ensure the deck size decreases by 1
-        CHECK( (newDeckSize == initialDeckSize - 1) );
+        CHECK((newDeckSize == initialDeckSize - 1));
 
         // Verify that the player owns one more card
-        CHECK( (p1.getOwnedCards().size() == 1) );
+        CHECK((p1.getOwnedCards().size() == 1));
 
         // Verify the player's resources are decremented correctly
-        CHECK( (TestPlayer::getResourceCount(p1, Resources::Wheat) == 0) );
-        CHECK( (TestPlayer::getResourceCount(p1, Resources::Ore) == 0) );
-        CHECK( (TestPlayer::getResourceCount(p1, Resources::Wool) == 0) );
+        CHECK((TestPlayer::getResourceCount(p1, Resources::Wheat) == 0));
+        CHECK((TestPlayer::getResourceCount(p1, Resources::Ore) == 0));
+        CHECK((TestPlayer::getResourceCount(p1, Resources::Wool) == 0));
 
         // Verify the card's owner is set correctly
         Card* ownedCard = p1.getOwnedCards().back();
@@ -391,28 +418,27 @@ TEST_CASE("Test card Deck ") {
          * 4. Attempt to draw another card once the deck is empty.
          */
 
-
         size_t initialDeckSize = CardDeck::getDeckSize();
         std::vector<mycatan::Card*> drawnCards;
 
         // Draw all cards
         for (size_t i = 0; i < initialDeckSize; ++i) {
             mycatan::Card* card = mycatan::CardDeck::drawCard();
-            REQUIRE( (card != nullptr) );
+            REQUIRE((card != nullptr));
             drawnCards.push_back(card);
         }
 
         // Verify that the correct number of cards is drawn
-        CHECK( (drawnCards.size() == initialDeckSize) );
+        CHECK((drawnCards.size() == initialDeckSize));
 
         // Verify that the deck is empty
         size_t afterAllCardDrawedSize = CardDeck::getDeckSize();
-        CHECK( (afterAllCardDrawedSize == 0) );
+        CHECK((afterAllCardDrawedSize == 0));
 
         // Try to draw another card after the deck is empty and catch the exception
         bool exceptionCaught = false;
         try {
-           CardDeck::drawCard();
+            CardDeck::drawCard();
         } catch (const std::runtime_error& e) {
             exceptionCaught = true;
             CHECK(std::string(e.what()) == "Cannot draw a card. The deck is empty.");
@@ -426,35 +452,34 @@ TEST_CASE("Test card Deck ") {
     }
 }
 
-TEST_CASE("Test trade"){
+TEST_CASE("Test trade") {
     mycatan::Player p1("ido");
     mycatan::Player p2("shoam");
 
-    SUBCASE("Test valid resources trade"){
-        //Add the players enough resources to trade
-        mycatan::TestPlayer::addResources(p1,Resources::Wheat, 4);
-        mycatan::TestPlayer::addResources(p2,Resources::Wood, 5);
+    SUBCASE("Test valid resources trade") {
+        // Add the players enough resources to trade
+        mycatan::TestPlayer::addResources(p1, Resources::Wheat, 4);
+        mycatan::TestPlayer::addResources(p2, Resources::Wood, 5);
 
         p1.setTurn(true);
-        p1.tradeResources(&p2 , Resources::Wood , Resources::Wheat , 2 , 3 );
+        p1.tradeResources(&p2, Resources::Wood, Resources::Wheat, 2, 3);
 
-       // verify that the resources amount updated according to the trade preformed by the players
-       CHECK( (mycatan::TestPlayer::getResourceCount(p1, Resources::Wood) == 2) );
-       CHECK( (mycatan::TestPlayer::getResourceCount(p2, Resources::Wheat) == 3));
-
+        // verify that the resources amount updated according to the trade preformed by the players
+        CHECK((mycatan::TestPlayer::getResourceCount(p1, Resources::Wood) == 2));
+        CHECK((mycatan::TestPlayer::getResourceCount(p2, Resources::Wheat) == 3));
     }
 
-    SUBCASE("Test inValid resources trade"){
+    SUBCASE("Test inValid resources trade") {
         // Scenario: Player 1 doesn't have enough resources to trade
-        CHECK_THROWS(p1.tradeResources(&p2 , Resources::Wood , Resources::Wheat , 6 , 3 ));
+        CHECK_THROWS(p1.tradeResources(&p2, Resources::Wood, Resources::Wheat, 6, 3));
         // Scenario: Player 2 doesn't have enough resources to trade
-        CHECK_THROWS(p1.tradeResources(&p2 , Resources::Wood , Resources::Wheat , 2 , 6 ));
+        CHECK_THROWS(p1.tradeResources(&p2, Resources::Wood, Resources::Wheat, 2, 6));
         // Scenario: Player 1 wants to trade more resources than they have
-        mycatan::TestPlayer::addResources(p1,Resources::Wheat, 2);
-        CHECK_THROWS(p1.tradeResources(&p2 , Resources::Wheat , Resources::Wood , 3 , 2 ));
+        mycatan::TestPlayer::addResources(p1, Resources::Wheat, 2);
+        CHECK_THROWS(p1.tradeResources(&p2, Resources::Wheat, Resources::Wood, 3, 2));
     }
 
-    SUBCASE("Test valid card trade"){
+    SUBCASE("Test valid card trade") {
         // add to the player card to trade for
         auto* yearOfPlentyCard = new mycatan::YearOfPlentyCard();
         mycatan::TestPlayer::addCardToPlayer(p1, yearOfPlentyCard);
@@ -463,34 +488,32 @@ TEST_CASE("Test trade"){
         mycatan::TestPlayer::addCardToPlayer(p2, monopolyCard);
 
         p1.setTurn(true);
-        p1.tradeDevelopmentCards(&p2, "Monopoly" , "Year of Plenty");
+        p1.tradeDevelopmentCards(&p2, "Monopoly", "Year of Plenty");
 
         // verify that both players have 1 owned card
-        CHECK( (p1.getOwnedCards().size() == 1) );
-        CHECK( (p2.getOwnedCards().size() == 1) );
+        CHECK((p1.getOwnedCards().size() == 1));
+        CHECK((p2.getOwnedCards().size() == 1));
 
-        //verify that monopoly card owner is ido and vice versa
+        // verify that monopoly card owner is ido and vice versa
         CHECK(monopolyCard->getOwner() == "ido");
         CHECK(yearOfPlentyCard->getOwner() == "shoam");
 
-
-        //clean up
+        // clean up
         delete yearOfPlentyCard;
         delete monopolyCard;
     }
 
-    SUBCASE("Test inValid card trade"){
+    SUBCASE("Test inValid card trade") {
         // Scenario: Player 1 doesn't own the specified card to trade
-        CHECK_THROWS(p1.tradeDevelopmentCards(&p2, "SomeNonexistentCard" , "Year of Plenty"));
+        CHECK_THROWS(p1.tradeDevelopmentCards(&p2, "SomeNonexistentCard", "Year of Plenty"));
         // Scenario: Player 2 doesn't own the specified card to trade
-        CHECK_THROWS(p1.tradeDevelopmentCards(&p2, "Monopoly" , "SomeNonexistentCard"));
+        CHECK_THROWS(p1.tradeDevelopmentCards(&p2, "Monopoly", "SomeNonexistentCard"));
     }
-
 }
 
 TEST_CASE("Test Board") {
     // Initialize the board
-    mycatan::Board *board = mycatan::Board::getInstance();
+    mycatan::Board* board = mycatan::Board::getInstance();
 
     SUBCASE("Test board vertices initialization") {
         // Verify each tile on the board
@@ -530,9 +553,8 @@ TEST_CASE("Test Board") {
             CHECK(found);
 
             // Further verify by checking all expected vertices coordinates
-            std::vector<std::pair<size_t, size_t>> expectedVertices = {
-                    {u, v}, {u + 1, v}, {u + 2, v}, {u + 2, v + 1}, {u + 1, v + 1}, {u, v + 1}
-            };
+            std::vector<std::pair<size_t, size_t>> expectedVertices = {{u, v},         {u + 1, v},     {u + 2, v},
+                                                                       {u + 2, v + 1}, {u + 1, v + 1}, {u, v + 1}};
 
             for (const auto& expected : expectedVertices) {
                 Vertex* vertex = Board::getInstance()->getVertex(expected.first, expected.second);
@@ -547,11 +569,10 @@ TEST_CASE("Test Board") {
                 CHECK(found);
             }
         }
-
+        board->cleanup();
     }
 
     SUBCASE("Test board edges initialization") {
-
         // Verify each tile on the board
         for (const auto& [coordinates, config] : Board::tileConfigurations) {
             // Find the tile inside the board
@@ -571,13 +592,12 @@ TEST_CASE("Test Board") {
 
             // Verify the edges of the tile
             std::vector<std::pair<Vertex*, Vertex*>> expectedEdges = {
-                    {Board::getInstance()->getVertex(u, v), Board::getInstance()->getVertex(u + 1, v)},
-                    {Board::getInstance()->getVertex(u + 1, v), Board::getInstance()->getVertex(u + 2, v)},
-                    {Board::getInstance()->getVertex(u + 2, v), Board::getInstance()->getVertex(u + 2, v + 1)},
-                    {Board::getInstance()->getVertex(u + 2, v + 1), Board::getInstance()->getVertex(u + 1, v + 1)},
-                    {Board::getInstance()->getVertex(u + 1, v + 1), Board::getInstance()->getVertex(u, v + 1)},
-                    {Board::getInstance()->getVertex(u, v + 1), Board::getInstance()->getVertex(u, v)}
-            };
+                {Board::getInstance()->getVertex(u, v), Board::getInstance()->getVertex(u + 1, v)},
+                {Board::getInstance()->getVertex(u + 1, v), Board::getInstance()->getVertex(u + 2, v)},
+                {Board::getInstance()->getVertex(u + 2, v), Board::getInstance()->getVertex(u + 2, v + 1)},
+                {Board::getInstance()->getVertex(u + 2, v + 1), Board::getInstance()->getVertex(u + 1, v + 1)},
+                {Board::getInstance()->getVertex(u + 1, v + 1), Board::getInstance()->getVertex(u, v + 1)},
+                {Board::getInstance()->getVertex(u, v + 1), Board::getInstance()->getVertex(u, v)}};
 
             std::vector<Edge*> edges = tile->getEdges();
             REQUIRE((edges.size() == 6));
@@ -588,7 +608,8 @@ TEST_CASE("Test Board") {
                 bool edgeFound = false;
 
                 for (Edge* edge : edges) {
-                    if ((edge->getVertex1() == v1 && edge->getVertex2() == v2) || (edge->getVertex1() == v2 && edge->getVertex2() == v1)) {
+                    if ((edge->getVertex1() == v1 && edge->getVertex2() == v2) ||
+                        (edge->getVertex1() == v2 && edge->getVertex2() == v1)) {
                         edgeFound = true;
                         break;
                     }
@@ -598,7 +619,7 @@ TEST_CASE("Test Board") {
         }
     }
 
-    board->cleanBoard();
+    board->cleanup();
 }
 
 TEST_CASE("Test Place first Road and Settlement") {
@@ -681,7 +702,7 @@ TEST_CASE("Test Place first Road and Settlement") {
     }
 
     // Cleanup the board after tests
-    board->cleanBoard();
+    board->cleanup();
 }
 
 TEST_CASE("Test Place Regular Settlements and Roads") {
@@ -706,7 +727,7 @@ TEST_CASE("Test Place Regular Settlements and Roads") {
 
     p3.setTurn(true);
     p3.PlaceFirstSettlements(8, 2, 9, 1);
-    p3.placeFirstRoads(8, 2, 9, 2, 9,  1 , 8, 1);
+    p3.placeFirstRoads(8, 2, 9, 2, 9, 1, 8, 1);
 
     WHEN("Placing a regular settlement and road") {
         // Manually add resources to p1
@@ -745,10 +766,10 @@ TEST_CASE("Test Place Regular Settlements and Roads") {
     }
 
     // Cleanup the board after tests
-    board->cleanBoard();
+    board->cleanup();
 }
 
-TEST_CASE("Test upgrade settlement to a city "){
+TEST_CASE("Test upgrade settlement to a city ") {
     // Initial setup
     // Create 3 players
     Player p1("ido");
@@ -764,23 +785,149 @@ TEST_CASE("Test upgrade settlement to a city "){
     p1.PlaceFirstSettlements(6, 1, 8, 0);
     p1.placeFirstRoads(6, 1, 6, 0, 8, 0, 7, 0);
 
-    SUBCASE("valid settlement upgrade"){
-         // give p1 enough resources to upgrade the settlement into a city
-         p1.addResource(Resources::Wheat , 2);
-         p1.addResource(Resources::Ore ,3 );
+    SUBCASE("valid settlement upgrade") {
+        // give p1 enough resources to upgrade the settlement into a city
+        p1.addResource(Resources::Wheat, 2);
+        p1.addResource(Resources::Ore, 3);
 
-         // try to upgrade the settlement at 6,1 into a city
-         p1.upgradeToCity(6,1);
-         // verify that p1 is the owner of the city, and that the vertex is now a city
-         Vertex* newCity = board->getVertex(6,1);
-         CHECK(newCity->isCity());
-         CHECK( (newCity->getOwner() == &p1) );
+        // try to upgrade the settlement at 6,1 into a city
+        p1.upgradeToCity(6, 1);
+        // verify that p1 is the owner of the city, and that the vertex is now a city
+        Vertex* newCity = board->getVertex(6, 1);
+        CHECK(newCity->isCity());
+        CHECK((newCity->getOwner() == &p1));
     }
-    SUBCASE("invalid settlement upgrade"){
+    SUBCASE("invalid settlement upgrade") {
         // try to upgrade the settlement at 6,1 into a city without enough resources
-        CHECK_THROWS( p1.upgradeToCity(6,1)) ;
+        CHECK_THROWS(p1.upgradeToCity(6, 1));
     }
 
     // clean up
-    board->cleanBoard();
+    board->cleanup();
+}
+
+SCENARIO("Valid game round") {
+    cout << "************************VALID GAME ROUND ***********************************" << endl;
+    // Initial setup: Create 3 players and initialize the game and board
+    Player p1("ido");
+    Player p2("shoam");
+    Player p3("shlomi");
+    Catan catan(p1, p2, p3);
+    Board* board = Board::getInstance();
+
+    GIVEN("Three players have been initialized and the game has started") {
+        // Choose the starting player
+        size_t startingPlayerIndex = catan.chooseStartingPlayer();
+        auto players = catan.getPlayers();
+
+        // Place initial settlements and roads for each player
+        p1.PlaceFirstSettlements(6, 1, 8, 0);
+        p1.placeFirstRoads(6, 1, 6, 0, 8, 0, 7, 0);
+        p1.endTurn();
+
+        p2.PlaceFirstSettlements(5, 2, 7, 1);
+        p2.placeFirstRoads(5, 2, 5, 1, 7, 1, 6, 1);
+        p2.endTurn();
+
+        p3.PlaceFirstSettlements(8, 2, 9, 1);
+        p3.placeFirstRoads(8, 2, 9, 2, 9, 1, 8, 1);
+        p3.endTurn();
+
+        WHEN("The first player places another settlement, rolls the dice, and ends their turn") {
+            // First player places another settlement and road
+            p1.setTurn(true);
+            p1.addResource(Resources::Wood, 1);
+            p1.addResource(Resources::Brick, 1);
+            p1.addResource(Resources::Wheat, 1);
+            p1.addResource(Resources::Wool, 1);
+            p1.placeSettlement(7, 2);
+
+            p1.addResource(Resources::Wood, 1);
+            p1.addResource(Resources::Brick, 1);
+            p1.placeRoad(7, 2, 6, 2);
+
+            // First player rolls the dice
+            size_t diceRoll = p1.rollDice();
+
+            // First player ends their turn
+            p1.endTurn();
+
+            THEN("The next player buys a development card") {
+                size_t nextPlayerIndex = (startingPlayerIndex + 1) % players.size();
+                Player* nextPlayer = players[nextPlayerIndex];
+                players[nextPlayerIndex]->setTurn(true);
+
+                // Ensure the player has enough resources to buy a development card
+                nextPlayer->addResource(Resources::Wheat, 1);
+                nextPlayer->addResource(Resources::Ore, 1);
+                nextPlayer->addResource(Resources::Wool, 1);
+
+                // Player buys a development card
+                nextPlayer->buyDevelopmentCard();
+
+                // Verify that the player owns one more card
+                CHECK((nextPlayer->getOwnedCards().size() == 1));
+
+                nextPlayer->endTurn();
+
+                THEN("The last player places a road") {
+                    size_t lastPlayerIndex = (nextPlayerIndex + 1) % players.size();
+                    players[lastPlayerIndex]->setTurn(true);
+
+                    // Ensure the player has enough resources to place a road
+                    players[lastPlayerIndex]->addResource(Resources::Wood, 1);
+                    players[lastPlayerIndex]->addResource(Resources::Brick, 1);
+
+                    // Player places a road
+                    players[lastPlayerIndex]->placeRoad(8, 2, 8, 3);
+                    players[lastPlayerIndex]->endTurn();
+
+                    THEN("The first player trades resources with another player") {
+                        // Ensure the players have enough resources to trade
+                        p1.addResource(Resources::Wheat, 3);
+                        p2.addResource(Resources::Wood, 2);
+
+                        // Save the starting amount of each player
+                        size_t p1StartingWheatAmount = TestPlayer::getResourceCount(p1, Resources::Wheat);
+                        size_t p1StartingWoodAmount = TestPlayer::getResourceCount(p1, Resources::Wood);
+
+                        size_t p2StartingWoodAmount = TestPlayer::getResourceCount(p2, Resources::Wood);
+                        size_t p2StartingWheatAmount = TestPlayer::getResourceCount(p2, Resources::Wheat);
+
+                        // Player 1 trades resources with Player 2
+                        p1.tradeResources(&p2, Resources::Wood, Resources::Wheat, 2, 3);
+                        p1.endTurn();
+
+                        // Verify the trade
+                        size_t p1CurrentWheatAmount = TestPlayer::getResourceCount(p1, Resources::Wheat);
+                        size_t p1CurrentWoodAmount = TestPlayer::getResourceCount(p1, Resources::Wood);
+                        size_t p2CurrentWoodAmount = TestPlayer::getResourceCount(p2, Resources::Wood);
+                        size_t p2CurrentWheatAmount = TestPlayer::getResourceCount(p2, Resources::Wheat);
+
+                        // Check the trade results
+                        CHECK(p1CurrentWheatAmount == p1StartingWheatAmount - 3);
+                        CHECK(p1CurrentWoodAmount == p1StartingWoodAmount + 2);
+                        CHECK(p2CurrentWoodAmount == p2StartingWoodAmount - 2);
+                        CHECK(p2CurrentWheatAmount == p2StartingWheatAmount + 3);
+
+                        // Verify that the turn goes back to the next player
+                        CHECK(players[nextPlayerIndex]->getMyTurn());
+
+                        THEN("Manually add points to the first player to reach winning condition and end the game") {
+                            // Manually add points to p1
+                            TestPlayer::addWinningPoints(p1, 10);
+
+                            // Check if the game recognizes the winner
+                            CHECK(catan.thereIsWinner() == true);
+                            CHECK(p1.getWinningPoints() >= 10);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Clean up the board after the test
+    board->cleanup();
+    cout << "************************END OF VALID GAME ROUND ***********************************" << endl;
 }
