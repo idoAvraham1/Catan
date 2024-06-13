@@ -26,7 +26,6 @@ CardDeck::CardDeck() {
 
 // Destructor: cleans up the deck by deleting all dynamically allocated cards
 CardDeck::~CardDeck() {
-    std::cout<<"Cleaning the card deck"<<std::endl;
     cleanDeck();
 }
 

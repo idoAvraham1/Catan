@@ -68,7 +68,6 @@ void Board::cleanBoard() {
 }
 
 Board::~Board() {
-    std::cout<<"Cleaning the board"<<std::endl;
     cleanBoard();
 }
 
