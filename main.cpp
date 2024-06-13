@@ -57,6 +57,7 @@ int main() {
 
 
     // make a phony winner to end the game properly
+    cout<<"************PHONY WINNER******************"<<endl;
     TestPlayer::addWinningPoints(p1,8);
     catan.thereIsWinner();
 
