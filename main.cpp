@@ -8,7 +8,7 @@
 
 using namespace mycatan;
 using namespace std;
-
+/*
 int main() {
 
     // create 3 players
@@ -63,4 +63,4 @@ int main() {
 
     return 0;
 }
-
+*/

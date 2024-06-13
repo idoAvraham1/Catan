@@ -43,11 +43,10 @@ namespace mycatan {
          */
         [[nodiscard]] static BiggestArmyCard *getBiggestArmyCard();
 
-
         /**
-         * @brief cleans up the deck (i.e deleting all cards in the deck)
+         * @brief Clean up the instance ptr
          */
-        static void cleanDeck();
+         void cleanup(); // Method to free resources
 
         /**
          * @brief Returns the Biggest Army card to the deck.
@@ -69,9 +68,9 @@ namespace mycatan {
         CardDeck();
 
         /**
-        * @brief Clean up the deck by deleting all dynamically allocated cards.
-        */
-        static void cleanUp(); // Method to free resources
+         * @brief cleans up the deck (i.e deleting all cards in the deck)
+         */
+        static void cleanDeck();
 
 
         /**

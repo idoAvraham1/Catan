@@ -14,6 +14,9 @@ public:
     // Constructor: Initializes the game with three players
     Catan(Player& p1, Player& p2, Player& p3);
 
+    // Destructor, release the board and the deck
+    ~Catan();
+
     // Choose the starting player randomly and return their index
     size_t chooseStartingPlayer();
 
@@ -34,7 +37,6 @@ private:
     bool isWinner;                 // Flag indicating if there is a winner
 
     // methods
-
     // Add references to other players for each player
     void addOtherPlayersToEachPlayer();
     // End the game and declare the winner

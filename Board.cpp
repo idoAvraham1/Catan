@@ -49,28 +49,26 @@ void Board::cleanup() {
 
 void Board::cleanBoard() {
     // Delete all tiles
-    for (Tile *tile : tiles) {
+    for (Tile* tile : tiles) {
         delete tile;
     }
     tiles.clear();
 
     // Delete all vertices
-    for (auto &vertexPair : vertices) {
+    for (auto& vertexPair : vertices) {
         delete vertexPair.second;
     }
     vertices.clear();
 
     // Delete all edges
-    for (auto &edgePair : edges) {
+    for (auto& edgePair : edges) {
         delete edgePair.second;
     }
     edges.clear();
-
-    // Reset the singleton instance
-    boardInstance = nullptr;
 }
 
 Board::~Board() {
+    std::cout<<"Cleaning the board"<<std::endl;
     cleanBoard();
 }
 

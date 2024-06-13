@@ -18,7 +18,9 @@ Player::Player(std::string name)
       owningBiggestArmyCard(false) {
 }
 
-Player::~Player() = default;
+Player::~Player() {
+    DevelopmentCardManagement::deleteOwnedCards(this);
+}
 
 // General methods
 void Player::endTurn() {
@@ -55,7 +57,7 @@ size_t Player::rollDice() {
     std::mt19937 gen(rd());                        // Seed the generator
     std::uniform_int_distribution<> distr(2, 12);  // Define the range
 
-    size_t diceRolled = distr(gen);  // Generate random number
+    auto diceRolled = static_cast<size_t>(distr(gen));  // Generate random number
     std::cout << name << " rolled: " << diceRolled << std::endl;
 
     // Notify the board of the dice roll

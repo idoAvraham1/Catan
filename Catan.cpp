@@ -15,6 +15,14 @@ Catan::Catan(Player& p1, Player& p2, Player& p3) : currentPlayerTurn(0), isWinne
     cardDeck = CardDeck::getInstance();
 }
 
+Catan::~Catan(){
+    // Clean up
+   if (board)
+        board->cleanup();
+   if(cardDeck)
+      cardDeck->cleanup();
+}
+
 // Choose starting player randomly
 size_t Catan::chooseStartingPlayer() {
     std::random_device rd;   // Obtain a random number from hardware
@@ -63,10 +71,4 @@ bool Catan::thereIsWinner() {
 
 void Catan::endGame(Player* player) {
     std::cout << player->getName() << " wins the game!" << std::endl;
-
-    // Clean up
-    if (board)
-        board->cleanup();
-
-    CardDeck::cleanDeck();
 }

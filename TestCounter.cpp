@@ -26,7 +26,7 @@ struct ReporterCounter : public ConsoleReporter
 };
 
 REGISTER_REPORTER("counter", 1, ReporterCounter);
-/*
+
 int main(int argc, char **argv)
 {
     Context context;
@@ -34,5 +34,5 @@ int main(int argc, char **argv)
     context.run();
     return return_code;
 }
- */
+
  

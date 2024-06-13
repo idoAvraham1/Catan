@@ -95,7 +95,7 @@ namespace mycatan {
         std::vector<Vertex *> settlements;
 
         bool isMyTurn;
-        int winning_points;
+        size_t winning_points;
         size_t knightCount;
         bool placedFirstSettlements;
         bool placedFirstRoads;

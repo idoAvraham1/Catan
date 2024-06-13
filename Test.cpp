@@ -15,6 +15,7 @@ using namespace mycatan;
 using namespace std;
 
 TEST_CASE("Turns logic ") {
+    cout << "Starting test case: Turns logic" << endl;
     // create 3 players
     Player p1("ido");
     Player p2("shoam");
@@ -23,11 +24,15 @@ TEST_CASE("Turns logic ") {
     Catan catan(p1, p2, p3);
 
     SUBCASE("Starting player index is within valid range") {
+        cout << "Running sub-case: Starting player index is within valid range" << endl;
+
         size_t startingPlayerIndex = catan.chooseStartingPlayer();
         CHECK((0 <= startingPlayerIndex && startingPlayerIndex <= 2));
     }
 
     SUBCASE("Player turn is correctly set") {
+
+
         size_t startingPlayerIndex = catan.chooseStartingPlayer();
         CHECK((0 <= startingPlayerIndex && startingPlayerIndex <= 2));
         // Check if the correct player turn is set
@@ -167,7 +172,7 @@ TEST_CASE("Dice logic") {
         CHECK((TestPlayer::getResourceCount(p2, Resources::Brick) == 4));
     }
 
-    board->cleanup();
+    //board->cleanup();
 }
 
 TEST_CASE("Test cards usage") {
@@ -200,6 +205,7 @@ TEST_CASE("Test cards usage") {
     }
 
     SUBCASE("Test Winning Points card ") {
+        cout << "Running sub-case: Winning points card" << endl;
         /**
          * This test case verifies the functionality of the Winning Points card.
          *
@@ -211,7 +217,6 @@ TEST_CASE("Test cards usage") {
         auto* winningPointsCard = new mycatan::WinningPointsCard();
         TestPlayer::addCardToPlayer(p1, winningPointsCard);
         CHECK((p1.getWinningPoints() == 1));
-        delete winningPointsCard;
     }
 
     SUBCASE("Test Monopoly card usage") {
@@ -227,6 +232,7 @@ TEST_CASE("Test cards usage") {
          * 7. Verify that the Brick resources of p2 and p3 are updated correctly (set to 0).
          * 8. Verify that p1's turn ends after using the card.
          */
+        cout << "Running sub-case: Monopoly card" << endl;
 
         auto* monopolyCard = new mycatan::MonopolyCard();
         TestPlayer::addCardToPlayer(p1, monopolyCard);
@@ -248,6 +254,7 @@ TEST_CASE("Test cards usage") {
     }
 
     SUBCASE("Test road card usage") {
+        cout << "Running sub-case: Road card usage" << endl;
         // get instance of the board
         Board* board = Board::getInstance();
         // add to p1 road card
@@ -291,7 +298,7 @@ TEST_CASE("Test cards usage") {
          * 5. Verify that that the biggest army card is marked as used
          * 6. Verify that p1's turn ends after using the card.
          */
-
+        cout << "Running sub-case: Biggest army card" << endl;
         // create 3 knight cards
         auto* firstKnightCard = new KnightCard();
         auto* secondKnightCard = new KnightCard();
@@ -311,11 +318,10 @@ TEST_CASE("Test cards usage") {
         CHECK((p1.getMyTurn() == false));
         CHECK((p1.getWinningPoints() == 2));
 
-        // clean up
-        TestPlayer::deletePlayerOwnedCards(p1);
     }
 
     SUBCASE("Test BiggestArmyCard lost ") {
+        cout << "Running sub-case: Biggest army card lost" << endl;
         // Create 3 knight cards
         auto* firstKnightCard = new KnightCard();
         auto* secondKnightCard = new KnightCard();
@@ -349,9 +355,6 @@ TEST_CASE("Test cards usage") {
         CHECK(!TestPlayer::isOwningBiggestArmyCard(p1));
         CHECK((p1.getWinningPoints() == 0));
 
-        // Clean up
-        TestPlayer::deletePlayerOwnedCards(p1);
-        TestPlayer::deletePlayerOwnedCards(p2);
     }
 }
 
@@ -369,10 +372,14 @@ TEST_CASE("Test card Deck ") {
          * 4. Verify that the card is added to the player's owned cards and that the player's resources are decremented
          * correctly.
          */
+        cout << "Running sub-case: buy dev card" << endl;
 
         // Create a player with sufficient resources
         Player p1("ido");
         p1.setTurn(true);
+
+        // get the deck instance
+        CardDeck* deck = CardDeck::getInstance();
 
         // Ensure the player has enough resources
         TestPlayer::addResources(p1, Resources::Ore, 1);
@@ -403,33 +410,34 @@ TEST_CASE("Test card Deck ") {
         CHECK(ownedCard->getOwner() == p1.getName());
 
         // Cleanup the deck and the drawn card
-        delete ownedCard;
-        CardDeck::cleanDeck();
+        deck->cleanup();
     }
 
     SUBCASE("Draw all the cards from the deck") {
         /**
-         * This subcase verifies that all cards can be drawn from the deck and the deck becomes empty.
+         * This subcase verifies that all deck can be drawn from the deck and the deck becomes empty.
          *
          * Steps:
-         * 1. Continuously draw cards until the deck is empty.
-         * 2. Verify that the correct number of cards are drawn.
-         * 3. Verify that the deck is empty after drawing all cards.
+         * 1. Continuously draw deck until the deck is empty.
+         * 2. Verify that the correct number of deck are drawn.
+         * 3. Verify that the deck is empty after drawing all deck.
          * 4. Attempt to draw another card once the deck is empty.
          */
+        cout << "Running sub-case: Draw all cards" << endl;
+
         // init the deck
-        CardDeck* cards = CardDeck::getInstance();
+        CardDeck* deck = CardDeck::getInstance();
         size_t initialDeckSize = CardDeck::getDeckSize();
         std::vector<mycatan::Card*> drawnCards;
 
-        // Draw all cards
+        // Draw all deck
         for (size_t i = 0; i < initialDeckSize; ++i) {
-            mycatan::Card* card = mycatan::CardDeck::drawCard();
+            mycatan::Card* card = CardDeck::drawCard();
             REQUIRE((card != nullptr));
             drawnCards.push_back(card);
         }
 
-        // Verify that the correct number of cards is drawn
+        // Verify that the correct number of deck is drawn
         CHECK((drawnCards.size() == initialDeckSize));
 
         // Verify that the deck is empty
@@ -451,18 +459,18 @@ TEST_CASE("Test card Deck ") {
             delete card;
         }
 
-        CardDeck::cleanDeck();
+        deck->cleanup();
     }
 }
 
 TEST_CASE("Test trade") {
-    mycatan::Player p1("ido");
-    mycatan::Player p2("shoam");
+    Player p1("ido");
+    Player p2("shoam");
 
     SUBCASE("Test valid resources trade") {
         // Add the players enough resources to trade
-        mycatan::TestPlayer::addResources(p1, Resources::Wheat, 4);
-        mycatan::TestPlayer::addResources(p2, Resources::Wood, 5);
+        TestPlayer::addResources(p1, Resources::Wheat, 4);
+        TestPlayer::addResources(p2, Resources::Wood, 5);
 
         p1.setTurn(true);
         p1.tradeResources(&p2, Resources::Wood, Resources::Wheat, 2, 3);
@@ -502,8 +510,8 @@ TEST_CASE("Test trade") {
         CHECK(yearOfPlentyCard->getOwner() == "shoam");
 
         // clean up
-        delete yearOfPlentyCard;
-        delete monopolyCard;
+        //delete yearOfPlentyCard;
+        //delete monopolyCard;
     }
 
     SUBCASE("Test inValid card trade") {
@@ -622,7 +630,7 @@ TEST_CASE("Test Board") {
         }
     }
 
-    board->cleanup();
+   // board->cleanup();
 }
 
 TEST_CASE("Test Place first Road and Settlement") {
@@ -769,7 +777,7 @@ TEST_CASE("Test Place Regular Settlements and Roads") {
     }
 
     // Cleanup the board after tests
-    board->cleanup();
+   // board->cleanup();
 }
 
 TEST_CASE("Test upgrade settlement to a city ") {
@@ -818,6 +826,7 @@ TEST_CASE("Invalid Moves and Error Handling") {
     // Initialize the game and board
     Catan catan(p1, p2, p3);
     Board* board = Board::getInstance();
+    CardDeck* deck = CardDeck::getInstance();
 
     SUBCASE("Invalid Settlement Placement") {
         p1.setTurn(true);
@@ -889,12 +898,10 @@ TEST_CASE("Invalid Moves and Error Handling") {
         CHECK_THROWS_AS(p1.upgradeToCity(5, 5), std::runtime_error);
     }
 
-    // clean ups
-    board->cleanup();
-    CardDeck::cleanDeck();
+    // clean-ups
+   // board->cleanup();
+    //deck->cleanup();
 }
-
-
 
 SCENARIO("Valid game round") {
     cout << "************************VALID GAME ROUND ***********************************" << endl;
@@ -1016,8 +1023,5 @@ SCENARIO("Valid game round") {
         }
     }
 
-    // Clean up the board after the test
-    board->cleanup();
-    CardDeck::cleanDeck();
     cout << "************************END OF VALID GAME ROUND ***********************************" << endl;
 }

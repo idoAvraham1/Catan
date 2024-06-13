@@ -26,6 +26,7 @@ CardDeck::CardDeck() {
 
 // Destructor: cleans up the deck by deleting all dynamically allocated cards
 CardDeck::~CardDeck() {
+    std::cout<<"Cleaning the card deck"<<std::endl;
     cleanDeck();
 }
 
@@ -35,14 +36,10 @@ void CardDeck::cleanDeck() {
         delete card;
     }
     cards.clear();
-
-    // reset the instance ptr
-    instance = nullptr;
-
 }
 
 // clean the deck ptr
-void CardDeck::cleanUp() {
+void CardDeck::cleanup() {
     // Clean up the singleton instance
     if (instance != nullptr) {
         delete instance;
