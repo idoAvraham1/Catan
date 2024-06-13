@@ -232,6 +232,11 @@ void Board::allocateResources(size_t diceRoll) {
                     Player *player = vertex->getOwner();
                     size_t amount = vertex->isCity() ? 2 : 1;  // cities produce double resources
                     player->addResource(tile->getResourceType(), amount);
+
+                    // Print the resource allocation details
+                    std::cout << player->getName() << " received " << amount << " unit(s) of "
+                              << resourceToString(tile->getResourceType()) << " from the settlement at ("
+                              << vertex->getX() << ", " << vertex->getY() << ")" << std::endl;
                 }
             }
         }

@@ -87,8 +87,8 @@ void RoadAndSettlementManagement::placeFirstSettlement(Player *player, size_t x,
         vertex->buildSettlement(player);
         player->settlements.push_back(vertex);
         player->winning_points++;
-        allocateResourcesForSettlement(player, vertex);
         std::cout << player->getName() << " placed the first settlement at (" << x << ", " << y << ")" << std::endl;
+        allocateResourcesForSettlement(player, vertex); // give the player resources according to the settlements
     } else {
         throw std::runtime_error("Cannot place settlement at (" + std::to_string(x) + ", " + std::to_string(y) + ")");
     }

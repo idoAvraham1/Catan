@@ -58,6 +58,7 @@ bool Catan::thereIsWinner() {
     for (size_t i = 0; i < players.size(); ++i) {
         std::cout << "Player " << players[i]->getName() << " has " << players[i]->getWinningPoints() << " points.\n";
     }
+    return false;
 }
 
 void Catan::endGame(Player* player) {
