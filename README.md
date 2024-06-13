@@ -1,3 +1,4 @@
+@@ -0,0 +1,121 @@
 # Catan Game Implementation
 
 ## Overview
@@ -55,7 +56,6 @@ Manages the development cards, including buying and using them.
 
 ### `Player`
 Represents a player in the game, including their resources, settlements, and roads.
-
 - **Player(std::string name)**: Creates a player.
 - **void endTurn()**: Ends the player's turn.
 - **void addOthersPlayers(Player &otherPlayer0, Player &otherPlayer1)**: Adds other players for trading purposes.
@@ -75,56 +75,6 @@ Represents a player in the game, including their resources, settlements, and roa
 - **void placeFirstRoads(size_t x1, size_t y1, size_t x2, size_t y2, size_t x3, size_t y3, size_t x4, size_t y4)**: Places the initial roads.
 - **void upgradeToCity(size_t x, size_t y)**: Upgrades a settlement to a city.
 
-### `Vertex`
-Represents a vertex on the board, which can hold a settlement or city.
-
-- **Vertex(size_t x, size_t y)**: Creates a vertex at the given coordinates.
-- **bool hasSettlement() const**: Checks if there is a settlement on the vertex.
-- **bool isCity() const**: Checks if there is a city on the vertex.
-- **void buildSettlement(Player* newOwner)**: Builds a settlement for the player.
-- **void upgradeToCity()**: Upgrades the settlement to a city.
-
-### `Edge`
-Represents a road between two vertices.
-
-- **Edge(Vertex* v1, Vertex* v2)**: Creates a road between two vertices.
-- **bool hasRoad() const**: Checks if there is a road on the edge.
-- **void placeRoad(Player* newOwner)**: Places a road for the player.
-
-### `Board`
-Manages the board, including tiles, vertices, and edges.
-
-- **static Board *getInstance()**: Returns the singleton instance of the board.
-- **void initializeBoard()**: Initializes the board with predefined tile configurations.
-- **void allocateResources(size_t diceRoll)**: Allocates resources to players based on the dice roll.
-- **bool canPlaceSettlement(Player *player, Vertex *vertex)**: Checks if a settlement can be placed on a vertex by a player.
-- **bool canPlaceRoad(Player *player, Vertex *vertex1, Vertex *vertex2)**: Checks if a road can be placed between two vertices by a player.
-
-### `ResourceManagement`
-Manages the resources for the players.
-
-- **static void addResource(Player* player, Resources resource, size_t amount)**: Adds resources to the player.
-- **static void decreaseResource(Player* player, Resources resource, size_t amount)**: Decreases resources from the player.
-- **static size_t giveAllResourcesOfType(Player* player, Resources resource)**: Gives all resources of a type from the player.
-- **static void tradeResources(Player* thisPlayer, Player* otherPlayer, Resources resourceIn, Resources resourceOut, size_t inAmount, size_t outAmount)**: Trades resources between players.
-- **static void decreaseResourcesAfterAction(Player* player, const std::string& action)**: Decreases resources after a specific action.
-- **static bool hasEnoughResources(const Player* player, const std::string& action)**: Checks if the player has enough resources for a specific action.
-- **static void decreaseHalfOfAllResource(Player* player)**: Decreases half of all resources from the player.
-
-### `RoadAndSettlementManagement`
-Manages the placement of settlements and roads on the board.
-
-- **static void placeSettlement(Player *player, size_t x, size_t y)**: Places a settlement on the board for the given player at the specified coordinates.
-- **static void placeRoad(Player *player, size_t x1, size_t y1, size_t x2, size_t y2)**: Places a road on the board for the given player between the specified coordinates.
-- **static void placeFirstSettlement(Player *player, size_t x, size_t y)**: Places the first settlement for the given player at the specified coordinates.
-- **static void placeFirstRoad(Player *player, size_t x1, size_t y1, size_t x2, size_t y2)**: Places the first road for the given player between the specified coordinates.
-- **static void allocateResourcesForSettlement(Player *player, Vertex *vertex)**: Allocates resources to the player for the newly placed settlement at the specified vertex.
-- **static void upgradeToCity(Player *player, size_t x, size_t y)**: Upgrades a settlement to a city for the given player at the specified coordinates.
-
-## Usage Instructions
-- **make runtests**: Runs the tests for the game.
-- **make runmain**: Runs the demo of the game.
-- **make valgrind**: Checks for memory leaks using Valgrind.
 ### `Vertex`
 Represents a vertex on the board, which can hold a settlement or city.
 - **Vertex(size_t x, size_t y)**: Creates a vertex at the given coordinates.
