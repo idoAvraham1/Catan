@@ -190,8 +190,8 @@ TEST_CASE("Test cards usage") {
          * 6. Verify that p1's turn ends after using the card.
          */
 
-        auto* yearOfPlentyCard = new mycatan::YearOfPlentyCard();
-        mycatan::TestPlayer::addCardToPlayer(p1, yearOfPlentyCard);
+        auto* yearOfPlentyCard = new YearOfPlentyCard();
+        TestPlayer::addCardToPlayer(p1, yearOfPlentyCard);
         p1.setTurn(true);
         p1.useYearOfPlentyCard(Resources::Brick, Resources::Wheat);
         CHECK((TestPlayer::getResourceCount(p1, Resources::Brick) == 1));
@@ -251,7 +251,7 @@ TEST_CASE("Test cards usage") {
         // get instance of the board
         Board* board = Board::getInstance();
         // add to p1 road card
-        RoadCard* roadCard = new RoadCard();
+        auto* roadCard = new RoadCard();
         TestPlayer::addCardToPlayer(p1, roadCard);
 
         // place settlements before placing road
@@ -380,7 +380,7 @@ TEST_CASE("Test card Deck ") {
         TestPlayer::addResources(p1, Resources::Wool, 1);
 
         // Save the original deck size
-        size_t initialDeckSize = mycatan::CardDeck::getDeckSize();
+        size_t initialDeckSize = CardDeck::getDeckSize();
 
         // Buy a development card
         p1.buyDevelopmentCard();
@@ -403,8 +403,8 @@ TEST_CASE("Test card Deck ") {
         CHECK(ownedCard->getOwner() == p1.getName());
 
         // Cleanup the deck and the drawn card
-        mycatan::CardDeck::cleanUp();
         delete ownedCard;
+        CardDeck::cleanDeck();
     }
 
     SUBCASE("Draw all the cards from the deck") {
@@ -417,7 +417,8 @@ TEST_CASE("Test card Deck ") {
          * 3. Verify that the deck is empty after drawing all cards.
          * 4. Attempt to draw another card once the deck is empty.
          */
-
+        // init the deck
+        CardDeck* cards = CardDeck::getInstance();
         size_t initialDeckSize = CardDeck::getDeckSize();
         std::vector<mycatan::Card*> drawnCards;
 
@@ -449,6 +450,8 @@ TEST_CASE("Test card Deck ") {
         for (mycatan::Card* card : drawnCards) {
             delete card;
         }
+
+        CardDeck::cleanDeck();
     }
 }
 
@@ -592,12 +595,12 @@ TEST_CASE("Test Board") {
 
             // Verify the edges of the tile
             std::vector<std::pair<Vertex*, Vertex*>> expectedEdges = {
-                {Board::getInstance()->getVertex(u, v), Board::getInstance()->getVertex(u + 1, v)},
-                {Board::getInstance()->getVertex(u + 1, v), Board::getInstance()->getVertex(u + 2, v)},
-                {Board::getInstance()->getVertex(u + 2, v), Board::getInstance()->getVertex(u + 2, v + 1)},
-                {Board::getInstance()->getVertex(u + 2, v + 1), Board::getInstance()->getVertex(u + 1, v + 1)},
-                {Board::getInstance()->getVertex(u + 1, v + 1), Board::getInstance()->getVertex(u, v + 1)},
-                {Board::getInstance()->getVertex(u, v + 1), Board::getInstance()->getVertex(u, v)}};
+                    {Board::getInstance()->getVertex(u, v), Board::getInstance()->getVertex(u + 1, v)},
+                    {Board::getInstance()->getVertex(u + 1, v), Board::getInstance()->getVertex(u + 2, v)},
+                    {Board::getInstance()->getVertex(u + 2, v), Board::getInstance()->getVertex(u + 2, v + 1)},
+                    {Board::getInstance()->getVertex(u + 2, v + 1), Board::getInstance()->getVertex(u + 1, v + 1)},
+                    {Board::getInstance()->getVertex(u + 1, v + 1), Board::getInstance()->getVertex(u, v + 1)},
+                    {Board::getInstance()->getVertex(u, v + 1), Board::getInstance()->getVertex(u, v)}};
 
             std::vector<Edge*> edges = tile->getEdges();
             REQUIRE((edges.size() == 6));
@@ -806,6 +809,93 @@ TEST_CASE("Test upgrade settlement to a city ") {
     board->cleanup();
 }
 
+TEST_CASE("Invalid Moves and Error Handling") {
+    // Create 3 players
+    Player p1("ido");
+    Player p2("shoam");
+    Player p3("shlomi");
+
+    // Initialize the game and board
+    Catan catan(p1, p2, p3);
+    Board* board = Board::getInstance();
+
+    SUBCASE("Invalid Settlement Placement") {
+        p1.setTurn(true);
+        p1.PlaceFirstSettlements(6, 1, 8, 0);
+        // Try to place a settlement on an occupied vertex
+        CHECK_THROWS_AS(p1.placeSettlement(8, 0), std::runtime_error);
+
+        // Try to place a settlement without a connecting road
+        CHECK_THROWS_AS(p1.placeSettlement(5, 5), std::runtime_error);
+    }
+
+    SUBCASE("Invalid Road Placement") {
+        p1.setTurn(true);
+        p1.PlaceFirstSettlements(6, 1, 8, 0);
+        p1.placeFirstRoads(6, 1, 6, 0, 8, 0, 7, 0);
+
+        // Try to place a road without a connecting settlement or road
+        CHECK_THROWS_AS(p1.placeRoad(5, 5, 5, 4), std::runtime_error);
+
+        // Try to place a road on an occupied edge
+        CHECK_THROWS_AS(p1.placeRoad(6, 1, 6, 0), std::runtime_error);
+    }
+
+    SUBCASE("Invalid Resource Transactions") {
+        p1.setTurn(true);
+        p1.addResource(Resources::Wood, 1);
+
+        // Try to trade more resources than available
+        CHECK_THROWS_AS(p1.tradeResources(&p2, Resources::Wheat, Resources::Wood, 2, 1), std::runtime_error);
+
+        // Try to buy a development card without enough resources
+        CHECK_THROWS_AS(p1.buyDevelopmentCard(), std::runtime_error);
+    }
+
+    SUBCASE("Invalid Development Card Usage") {
+        auto* yearOfPlentyCard = new YearOfPlentyCard();
+        TestPlayer::addCardToPlayer(p1, yearOfPlentyCard);
+
+        // Try to use the card out of turn
+        CHECK_THROWS_AS(p2.useYearOfPlentyCard(Resources::Brick, Resources::Wheat), std::runtime_error);
+
+        // Use the card in turn
+        p1.setTurn(true);
+        p1.useYearOfPlentyCard(Resources::Brick, Resources::Wheat);
+        CHECK(!p1.getMyTurn());  // Ensure turn ends after use
+
+        // Try to use the card again in the same turn
+        CHECK_THROWS_AS(p1.useYearOfPlentyCard(Resources::Brick, Resources::Wheat), std::runtime_error);
+    }
+
+    SUBCASE("Invalid Upgrade to City") {
+        p1.setTurn(true);
+        p1.PlaceFirstSettlements(6, 1, 8, 0);
+
+        // Try to upgrade without enough resources
+        CHECK_THROWS_AS(p1.upgradeToCity(6, 1), std::runtime_error);
+
+        // Add enough resources and upgrade
+        p1.addResource(Resources::Wheat, 2);
+        p1.addResource(Resources::Ore, 3);
+        p1.upgradeToCity(6, 1);
+        Vertex* upgradedVertex = board->getVertex(6, 1);
+        CHECK(upgradedVertex->isCity());
+
+        // Try to upgrade the same settlement again
+        CHECK_THROWS_AS(p1.upgradeToCity(6, 1), std::runtime_error);
+
+        // Try to upgrade a non-existent settlement
+        CHECK_THROWS_AS(p1.upgradeToCity(5, 5), std::runtime_error);
+    }
+
+    // clean ups
+    board->cleanup();
+    CardDeck::cleanDeck();
+}
+
+
+
 SCENARIO("Valid game round") {
     cout << "************************VALID GAME ROUND ***********************************" << endl;
     // Initial setup: Create 3 players and initialize the game and board
@@ -834,22 +924,21 @@ SCENARIO("Valid game round") {
         p3.endTurn();
 
         WHEN("The first player places another settlement, rolls the dice, and ends their turn") {
-            // First player places another settlement and road
+            // The First player places another settlement and road
             p1.setTurn(true);
             p1.addResource(Resources::Wood, 1);
             p1.addResource(Resources::Brick, 1);
             p1.addResource(Resources::Wheat, 1);
             p1.addResource(Resources::Wool, 1);
-            p1.placeSettlement(7, 2);
+            p1.placeSettlement(7, 0);
 
             p1.addResource(Resources::Wood, 1);
             p1.addResource(Resources::Brick, 1);
-            p1.placeRoad(7, 2, 6, 2);
+            p1.placeRoad(6, 0, 7, 0);
 
             // First player rolls the dice
-            size_t diceRoll = p1.rollDice();
-
-            // First player ends their turn
+             p1.rollDice();
+            // The First player ends their turn
             p1.endTurn();
 
             THEN("The next player buys a development card") {
@@ -870,7 +959,7 @@ SCENARIO("Valid game round") {
 
                 nextPlayer->endTurn();
 
-                THEN("The last player places a road") {
+                THEN("The last player (p3) places a road") {
                     size_t lastPlayerIndex = (nextPlayerIndex + 1) % players.size();
                     players[lastPlayerIndex]->setTurn(true);
 
@@ -905,10 +994,10 @@ SCENARIO("Valid game round") {
                         size_t p2CurrentWheatAmount = TestPlayer::getResourceCount(p2, Resources::Wheat);
 
                         // Check the trade results
-                        CHECK(p1CurrentWheatAmount == p1StartingWheatAmount - 3);
-                        CHECK(p1CurrentWoodAmount == p1StartingWoodAmount + 2);
-                        CHECK(p2CurrentWoodAmount == p2StartingWoodAmount - 2);
-                        CHECK(p2CurrentWheatAmount == p2StartingWheatAmount + 3);
+                        CHECK( (p1CurrentWheatAmount == p1StartingWheatAmount - 3));
+                        CHECK((p1CurrentWoodAmount == p1StartingWoodAmount + 2));
+                        CHECK((p2CurrentWoodAmount == p2StartingWoodAmount - 2));
+                        CHECK((p2CurrentWheatAmount == p2StartingWheatAmount + 3));
 
                         // Verify that the turn goes back to the next player
                         CHECK(players[nextPlayerIndex]->getMyTurn());
@@ -918,8 +1007,8 @@ SCENARIO("Valid game round") {
                             TestPlayer::addWinningPoints(p1, 10);
 
                             // Check if the game recognizes the winner
-                            CHECK(catan.thereIsWinner() == true);
-                            CHECK(p1.getWinningPoints() >= 10);
+                            CHECK((catan.thereIsWinner() == true));
+                            CHECK((p1.getWinningPoints() >= 10));
                         }
                     }
                 }
@@ -929,5 +1018,6 @@ SCENARIO("Valid game round") {
 
     // Clean up the board after the test
     board->cleanup();
+    CardDeck::cleanDeck();
     cout << "************************END OF VALID GAME ROUND ***********************************" << endl;
 }

@@ -1,3 +1,6 @@
+// written by Ido Avraham : 208699181
+// EMAIL: idoavraham086@gmail.com
+
 #ifndef CATAN_RESOURCEMANAGEMENT_HPP
 #define CATAN_RESOURCEMANAGEMENT_HPP
 

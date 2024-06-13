@@ -1,3 +1,6 @@
+// written by Ido Avraham : 208699181
+// EMAIL: idoavraham086@gmail.com
+
 #ifndef CATAN_DEVELOPMENTCARDMANAGEMENT_HPP
 #define CATAN_DEVELOPMENTCARDMANAGEMENT_HPP
 
@@ -57,12 +60,6 @@ class DevelopmentCardManagement {
      */
     static void deleteOwnedCards(Player* player);
 
-    /**
-     * @brief Gets the knight count of the player.
-     * @param player Pointer to the player.
-     * @return The number of knight cards the player has.
-     */
-    static size_t getKnightCount(const Player* player);
 
   private:
     /**

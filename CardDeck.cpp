@@ -1,28 +1,60 @@
+// written by Ido Avraham : 208699181
+// EMAIL: idoavraham086@gmail.com
 #include "CardDeck.hpp"
-
 using namespace mycatan;
+
+
 
 // Define the static member variables
 std::vector<Card*> CardDeck::cards;
+CardDeck* instance = nullptr;
 size_t CardDeck::biggestArmyCardsInDeck = 0;  // Initialize to a default value
-bool CardDeck::isInitialized = false;         // Initialize to a default value
+
+
+// get instance of the deck
+CardDeck* CardDeck::getInstance(){
+    if(instance == nullptr)
+        instance = new CardDeck();
+    return instance;
+}
 
 // Constructor: initializes and shuffles the deck
 CardDeck::CardDeck() {
     initializeDeck();
-    isInitialized = true;
     shuffleDeck();
 }
 
 // Destructor: cleans up the deck by deleting all dynamically allocated cards
 CardDeck::~CardDeck() {
-    cleanUp();
+    cleanDeck();
+}
+
+// Clean up the deck by deleting all dynamically allocated cards
+void CardDeck::cleanDeck() {
+    for (Card* card : cards) {
+        delete card;
+    }
+    cards.clear();
+
+    // reset the instance ptr
+    instance = nullptr;
+
+}
+
+// clean the deck ptr
+void CardDeck::cleanUp() {
+    // Clean up the singleton instance
+    if (instance != nullptr) {
+        delete instance;
+        instance = nullptr;
+    }
 }
 
 // Initialize the deck with predefined cards
 void CardDeck::initializeDeck() {
-    isInitialized = true;  // mark the deck as already initiated
     biggestArmyCardsInDeck = 3;
+    cards.clear();  // Clear any existing cards before initializing
+
     // Add Knight cards
     for (int i = 0; i < 14; ++i) {
         cards.push_back(new KnightCard());
@@ -61,10 +93,10 @@ void CardDeck::shuffleDeck() {
 
 // Draw a card from the deck
 Card* CardDeck::drawCard() {
-    if (isInitialized == false)  // Initialize the deck only once
-        CardDeck();
+    if (instance == nullptr)  // Initialize the deck only once
+         instance = new CardDeck();
 
-    if (cards.empty() && isInitialized) {  // Check if the deck is empty
+    if (cards.empty() && instance != nullptr) {  // Check if the deck is empty
         throw std::runtime_error("Cannot draw a card. The deck is empty.");
     }
 
@@ -81,8 +113,8 @@ size_t CardDeck::getDeckSize() {
 
 // Get the Biggest Army card from the deck
 BiggestArmyCard* CardDeck::getBiggestArmyCard() {
-    if (isInitialized == false)  // Initialize the deck only once
-        initializeDeck();
+    if (instance == nullptr)  // Initialize the deck only once
+        instance = new CardDeck();
 
     // verify that biggest army cards left in the deck
     if (biggestArmyCardsInDeck == 0)
@@ -94,15 +126,10 @@ BiggestArmyCard* CardDeck::getBiggestArmyCard() {
     return biggestArmyCard;
 }
 
-// Clean up the deck by deleting all dynamically allocated cards
-void CardDeck::cleanUp() {
-    for (Card* card : cards) {
-        delete card;
-    }
-    cards.clear();
-}
-
+// get the biggest army card back from a player (e.g after a trade with other player of knight card)
 void CardDeck::returnBiggestArmyCard(Card* biggestArmyCard) {
     biggestArmyCardsInDeck++;
     delete biggestArmyCard;
 }
+
+

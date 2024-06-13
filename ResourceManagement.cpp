@@ -1,3 +1,6 @@
+// written by Ido Avraham : 208699181
+// EMAIL: idoavraham086@gmail.com
+
 #include "ResourceManagement.hpp"
 #include "Player.hpp"
 
@@ -73,7 +76,7 @@ namespace mycatan {
     bool ResourceManagement::hasEnoughResources(const Player *player, const std::string &action) {
         static std::unordered_map<std::string, std::vector<size_t>> resourceRequirements = {
                 {"settlement",      {1, 1, 1, 1, 0}},       // 1 Brick, 1 Wheat, 1 Wool, 1 Wood
-                {"road",            {1, 0, 1, 0, 0}},             // 1 Brick, 1 Wood
+                {"road",            {1, 0, 0, 1, 0}},             // 1 Brick, 1 Wood
                 {"city",            {0, 2, 0, 0, 3}},             // Wheat 2, 3 Ore
                 {"developmentCard", {0, 1, 1, 0, 1}}   // 1 Wheat, 1 Wool, 1 Ore
         };

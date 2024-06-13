@@ -1,3 +1,5 @@
+// written by Ido Avraham : 208699181
+// EMAIL: idoavraham086@gmail.com
 #ifndef CATAN_CATAN_API_HPP
 #define CATAN_CATAN_API_HPP
 
@@ -24,7 +26,8 @@
 
 // enums
 enum class Resources { Brick , Wheat , Wool , Wood , Ore, Desert };
-enum class Lands { Forest, Hills, Pasture, Fields, Mountains, Desert };
+
+// enums converting methods
 
 inline std::string resourceToString(Resources resource) {
     switch (resource) {

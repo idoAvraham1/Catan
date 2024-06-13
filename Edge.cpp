@@ -1,5 +1,8 @@
-// just for commit
+// written by Ido Avraham : 208699181
+// EMAIL: idoavraham086@gmail.com
+
 #include "Edge.hpp"
+
 using namespace mycatan;
 
 Edge::Edge(Vertex* v1, Vertex* v2): v1(v1) , v2(v2) , owner(nullptr) {}

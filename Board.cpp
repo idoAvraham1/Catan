@@ -1,4 +1,7 @@
+// written by Ido Avraham : 208699181
+// EMAIL: idoavraham086@gmail.com
 #include "Board.hpp"
+
 using namespace mycatan;
 
 // Initialize static member
@@ -6,30 +9,30 @@ Board *Board::boardInstance = nullptr;
 
 // Define the predefined tile configuration for the default Catan board
 std::map<std::pair<size_t, size_t>, TileConfig> Board::tileConfigurations = {
-    // first row
-    {{0, 4}, {Resources::Brick, 5}},
-    {{1, 4}, {Resources::Wheat, 6}},
-    {{2, 4}, {Resources::Wool, 11}},
-    // second row
-    {{0, 3}, {Resources::Wood, 8}},
-    {{1, 3}, {Resources::Ore, 3}},
-    {{2, 3}, {Resources::Wheat, 4}},
-    {{3, 3}, {Resources::Wool, 7}},
-    // third row
-    {{0, 2}, {Resources::Wheat, 9}},
-    {{1, 2}, {Resources::Wood, 11}},
-    {{2, 2}, {Resources::Desert, 7}},
-    {{3, 2}, {Resources::Wood, 3}},
-    {{4, 2}, {Resources::Ore, 8}},
-    // fourth row
-    {{1, 1}, {Resources::Wheat, 12}},
-    {{2, 1}, {Resources::Brick, 6}},
-    {{3, 1}, {Resources::Wool, 4}},
-    {{4, 1}, {Resources::Brick, 10}},
-    // fifth row
-    {{2, 0}, {Resources::Ore, 10}},
-    {{3, 0}, {Resources::Wool, 2}},
-    {{4, 0}, {Resources::Wood, 9}},
+        // first row
+        {{0, 4}, {Resources::Brick, 5}},
+        {{1, 4}, {Resources::Wheat, 6}},
+        {{2, 4}, {Resources::Wool, 11}},
+        // second row
+        {{0, 3}, {Resources::Wood, 8}},
+        {{1, 3}, {Resources::Ore, 3}},
+        {{2, 3}, {Resources::Wheat, 4}},
+        {{3, 3}, {Resources::Wool, 7}},
+        // third row
+        {{0, 2}, {Resources::Wheat, 9}},
+        {{1, 2}, {Resources::Wood, 11}},
+        {{2, 2}, {Resources::Desert, 7}},
+        {{3, 2}, {Resources::Wood, 3}},
+        {{4, 2}, {Resources::Ore, 8}},
+        // fourth row
+        {{1, 1}, {Resources::Wheat, 12}},
+        {{2, 1}, {Resources::Brick, 6}},
+        {{3, 1}, {Resources::Wool, 4}},
+        {{4, 1}, {Resources::Brick, 10}},
+        // fifth row
+        {{2, 0}, {Resources::Ore, 10}},
+        {{3, 0}, {Resources::Wool, 2}},
+        {{4, 0}, {Resources::Wood, 9}},
 };
 
 // Private constructor
@@ -196,29 +199,6 @@ bool Board::canPlaceSettlement(Player *player, Vertex *vertex) {
     return false;  // No road leads to this vertex
 }
 
-void Board::allocateResources(size_t diceRoll) {
-    for (Tile *tile : tiles) {
-        if (tile->getId() == diceRoll) {
-            // The tile's number token matches the dice roll
-            for (Vertex *vertex : tile->getVertices()) {
-                if (vertex->hasSettlement()) {
-                    Player *player = vertex->getOwner();
-                    size_t amount = vertex->isCity() ? 2 : 1;  // cities produce double resources
-                    player->addResource(tile->getResourceType(), amount);
-                }
-            }
-        }
-    }
-}
-
-size_t Board::getVertexCount() const {
-    return vertices.size();
-}
-
-size_t Board::getEdgeCount() const {
-    return edges.size();
-}
-
 bool Board::canPlaceRoad(Player *player, Vertex *vertex1, Vertex *vertex2) {
     // Check that the road has no other owner
     Edge *road = getEdge(vertex1, vertex2);
@@ -242,3 +222,27 @@ bool Board::canPlaceRoad(Player *player, Vertex *vertex1, Vertex *vertex2) {
 
     return false;
 }
+
+void Board::allocateResources(size_t diceRoll) {
+    for (Tile *tile : tiles) {
+        if (tile->getId() == diceRoll) {
+            // The tile's number token matches the dice roll
+            for (Vertex *vertex : tile->getVertices()) {
+                if (vertex->hasSettlement()) {
+                    Player *player = vertex->getOwner();
+                    size_t amount = vertex->isCity() ? 2 : 1;  // cities produce double resources
+                    player->addResource(tile->getResourceType(), amount);
+                }
+            }
+        }
+    }
+}
+
+size_t Board::getVertexCount() const {
+    return vertices.size();
+}
+
+size_t Board::getEdgeCount() const {
+    return edges.size();
+}
+

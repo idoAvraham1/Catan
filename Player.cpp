@@ -1,3 +1,6 @@
+// written by Ido Avraham : 208699181
+// EMAIL: idoavraham086@gmail.com
+
 #include "Player.hpp"
 
 using namespace mycatan;
@@ -112,8 +115,7 @@ void Player::tradeDevelopmentCards(Player* other, const std::string& cardIn, con
 }
 
 // Resource methods
-void Player::tradeResources(Player* other, Resources resourceIn, Resources resourceOut, size_t inAmount,
-                            size_t outAmount) {
+void Player::tradeResources(Player* other, Resources resourceIn, Resources resourceOut, size_t inAmount, size_t outAmount) {
     ResourceManagement::tradeResources(this, other, resourceIn, resourceOut, inAmount, outAmount);
 }
 void Player::addResource(Resources resource, size_t amount) {

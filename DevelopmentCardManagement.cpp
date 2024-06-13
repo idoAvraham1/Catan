@@ -1,5 +1,7 @@
-#include "DevelopmentCardManagement.hpp"
+// written by Ido Avraham : 208699181
+// EMAIL: idoavraham086@gmail.com
 
+#include "DevelopmentCardManagement.hpp"
 #include "Player.hpp"
 
 using namespace mycatan;
@@ -44,6 +46,7 @@ void DevelopmentCardManagement::useMonopolyCard(Player* player, Resources giveMe
     std::cout << player->name << " used a Monopoly card! Collected " << totalResourcesCollected << " "
               << resourceToString(giveMeThatResource) << " from other players." << std::endl;
 
+    removeCard(player , monopolyCard); // remove the card from the player owned cards
     delete monopolyCard;  // Delete the used card
     player->endTurn();
 }
@@ -59,6 +62,8 @@ void DevelopmentCardManagement::useYearOfPlentyCard(Player* player, Resources re
     std::cout << player->name << " used a Year of Plenty card! Gained " << resourceToString(resource1) << " and "
               << resourceToString(resource2) << "." << std::endl;
 
+
+    removeCard(player , yearOfPlentyCard); // remove the card from the player owned cards
     delete yearOfPlentyCard;  // Delete the used card
     player->endTurn();
 }
@@ -75,8 +80,9 @@ void DevelopmentCardManagement::useRoadCard(Player* player, size_t x1, size_t y1
     std::cout << player->name << " used a Road Building card and built roads at (" << x1 << ", " << y1 << ") to (" << x2
               << ", " << y2 << ") and (" << x3 << ", " << y3 << ") to (" << x4 << ", " << y4 << ")." << std::endl;
 
-    // delete the card after usage
-    delete roadCard;
+
+    removeCard(player , roadCard); // remove the card from the player owned cards
+    delete roadCard;// delete the card after usage
 }
 
 void DevelopmentCardManagement::getBiggestArmyCard(Player* player) {
@@ -135,9 +141,6 @@ void DevelopmentCardManagement::deleteOwnedCards(Player* player) {
     player->ownedCards.clear();
 }
 
-size_t DevelopmentCardManagement::getKnightCount(const Player* player) {
-    return player->knightCount;
-}
 
 Card* DevelopmentCardManagement::getOwnedCard(const Player* player, const std::string& cardType) {
     for (Card* myCard : player->ownedCards) {
